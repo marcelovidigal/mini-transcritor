@@ -1,0 +1,24 @@
+# Integração contínua: roda os testes a cada push/PR. NÃO gera release.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - uses: FedericoCarboni/setup-ffmpeg@v3   # os testes geram mídia sintética com ffmpeg
+      - run: pip install -r requirements.txt
+      - run: python -m pytest -q

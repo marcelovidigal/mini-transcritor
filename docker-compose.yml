@@ -1,0 +1,47 @@
+# Mini Transcritor — modo servidor: Caddy (HTTPS) -> app (Flask/waitress) -> Ollama (GPU, rede privada).
+# Uso:  cp .env.example .env  (preencha)  &&  docker compose up -d --build
+services:
+  ollama:
+    image: ollama/ollama:latest
+    restart: unless-stopped
+    volumes:
+      - ollama_models:/root/.ollama          # modelos persistem entre reinícios
+    # SEM "ports": o Ollama nunca é exposto fora da rede interna do compose.
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia                  # requer NVIDIA Container Toolkit; sem GPU, remova este bloco (CPU: lento)
+              count: all
+              capabilities: [gpu]
+
+  app:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      OLLAMA_HOST: http://ollama:11434
+    depends_on:
+      - ollama
+    volumes:
+      - app_data:/data
+    # SEM "ports": só o Caddy fala com o app.
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+    depends_on:
+      - app
+
+volumes:
+  ollama_models:
+  app_data:
+  caddy_data:

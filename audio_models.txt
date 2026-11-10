@@ -1,0 +1,38 @@
+# Catálogo estático de modelos do Ollama multimodais com entrada de ÁUDIO.
+#
+# Para que serve: lista os modelos recomendados para transcrição, para o app não precisar
+# descobrir isso a cada abertura. Modelos de áudio já instalados na máquina e que NÃO estão
+# aqui continuam aparecendo na lista (como instalados).
+#
+# Formato (uma linha por modelo):   nome:tag | tamanho aproximado do download | observação
+#
+# REGRA DE NOMES: nunca use `latest` nem nome sem tag. Use sempre a tag mais descritiva, com a
+# quantidade de parâmetros (e a quantização, quando existir), ex.: nemotron3:33b-q4_K_M.
+# O app ignora (e os testes reprovam) linhas sem tag ou com `latest`.
+# Para descobrir a tag certa: https://ollama.com/library/<modelo>/tags  (compare o hash com o da tag "latest").
+#
+# A ORDEM é a prioridade (família Gemma primeiro). Linhas com # são comentários.
+# O app confirma a capability "audio" (/api/show) depois de baixar qualquer modelo.
+#
+# Como atualizar: consulte https://ollama.com/search?c=audio, edite este arquivo e reinicie o app.
+# Fica ao lado do executável (ou na raiz do projeto); não é preciso recompilar.
+#
+# Última revisão: 2026-11-08
+#
+# Fora do catálogo de propósito:
+#  - têm áudio, mas não são para transcrição: embeddinggemma-2 (embeddings), d1-omni (decisão);
+#  - nemotron-3.5-bolt:74b-a9b-iq2 (25 GB, tem projetor): NÃO testado. Só o bolt:e4b foi testado e entrou;
+#  - nemotron3 (33B, Nano Omni): apesar do selo "audio" na biblioteca, as tags GGUF não têm projetor
+#    multimodal e o Ollama recusa áudio (erro 400, testado com 33b-q4_K_M). Confirme a camada `projector`
+#    no manifesto do registro antes de baixar modelos novos;
+#  - gemma4:26b e gemma4:31b NÃO aceitam áudio (só texto e imagem) — o Ollama responde erro 400;
+#  - NÃO existem na biblioteca oficial do Ollama: Qwen2.5-Omni, Qwen3-Omni, SALMONN, VibeVoice,
+#    Voxtral, Phi-4 Multimodal (o upload comunitário rockn/Qwen2.5-Omni-7B-Q4_K_M não traz o
+#    projetor multimodal, logo não processa áudio). Reavalie quando o Ollama passar a suportá-los.
+
+gemma4:e4b            | 6.6 GB  | Padrão recomendado (4B efetivos). Melhor equilíbrio nos testes (inglês e português).
+gemma4:e2b            | 4.6 GB  | 2B efetivos: mais leve e rápido; um pouco pior em português.
+gemma4:12b            | 8.0 GB  | 12B: maior, contexto longo. Nos testes não superou o e4b e às vezes recusa transcrever.
+nemotron-3.5-bolt:e4b-q4_K_M | 7.9 GB | NVIDIA Nemotron 3.5 Bolt (8B, 4B efetivos, Q4_K_M; base Gemma 4 E4B). Testado: empata com o gemma4:e4b.
+lfm3-omni:2b-q4_K_M   | 2.0 GB  | Liquid AI, 2B, Q4_K_M. Bom em inglês, FRACO em português (WER 75% no teste).
+lfm3-audio:2b-q4_K_M  | 1.7 GB  | Liquid AI, 2B, Q4_K_M, o mais leve. Bom em inglês, fraco em português (WER 55%).

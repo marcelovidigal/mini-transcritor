@@ -1,0 +1,70 @@
+# Release: só acontece quando VOCÊ decide.
+#   - Push de uma tag vX.Y.Z           -> testa, compila todos os SO e PUBLICA o Release.
+#   - Execução manual (Actions > Run)   -> compila; só publica se marcar "publish".
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: "Publicar o Release no GitHub (senão, apenas gera os artefatos para conferência)"
+        type: boolean
+        default: false
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: windows-latest,   target: windows-x64 }
+          - { os: ubuntu-latest,    target: linux-x64 }
+          - { os: ubuntu-24.04-arm, target: linux-arm64 }
+          - { os: macos-latest,     target: macos-arm64 }    # Apple Silicon
+          # Intel (macos-x64): adicione aqui um runner Intel quando disponível, ex.: { os: macos-15-intel, target: macos-x64 }
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - uses: FedericoCarboni/setup-ffmpeg@v3
+      - run: pip install -r requirements.txt
+      - name: Tag precisa bater com transcritor/version.py
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: bash
+        run: |
+          VER=$(python -c "from transcritor.version import __version__ as v; print(v)")
+          [ "v$VER" = "${GITHUB_REF_NAME}" ] || { echo "Tag ${GITHUB_REF_NAME} != versão v$VER"; exit 1; }
+      - run: python -m pytest -q
+      - run: python build.py --archive
+      - run: python smoke_test.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MiniTranscritor-${{ matrix.target }}
+          path: |
+            dist/MiniTranscritor-v*
+          if-no-files-found: error
+
+  publish:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v') || inputs.publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: assets
+          merge-multiple: true
+      - name: Criar Release único com os arquivos de todos os SO
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VER=$(python3 -c "from transcritor.version import __version__ as v; print(v)")
+          PRE=""; case "$VER" in *-*) PRE="--prerelease";; esac
+          gh release create "v$VER" assets/* --target "$GITHUB_SHA" --title "Mini Transcritor v$VER" --generate-notes $PRE

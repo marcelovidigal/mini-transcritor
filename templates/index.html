@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mini Transcritor</title>
+  <link rel="icon" href="{{ url_for('static', filename='img/logo.svg') }}" type="image/svg+xml">
+  <link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+</head>
+<body class="bg-light">
+<main class="container py-5" style="max-width: 720px;">
+  <header class="d-flex align-items-center gap-3 mb-4">
+    <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="Logo" width="56" height="56">
+    <div>
+      <h1 class="h3 mb-0">Mini Transcritor</h1>
+      <small class="text-body-secondary">Legendas SRT a partir de áudio ou vídeo, com modelos locais do Ollama</small>
+    </div>
+    {% if server_mode %}
+    <div class="ms-auto text-end small">
+      <div class="text-body-secondary text-break" id="userEmail">{{ user.email if user else '' }}</div>
+      <button type="button" id="btnLogout" class="btn btn-link btn-sm p-0">Sair</button>
+    </div>
+    {% else %}
+    <button type="button" id="btnSettings" class="btn btn-outline-secondary btn-sm ms-auto" title="Configurações">&#9881; Configurações</button>
+    {% endif %}
+  </header>
+
+  <div id="setupCard" class="card shadow-sm border-warning mb-3 d-none">
+    <div class="card-body">
+      <h2 id="setupTitle" class="h6">Preparando o ambiente</h2>
+      <p id="setupMsg" class="mb-2"></p>
+      <div id="setupProgress" class="d-none mb-2">
+        <div class="progress" role="progressbar" aria-label="Preparo"><div id="setupBar" class="progress-bar progress-bar-striped progress-bar-animated" style="width:0%"></div></div>
+      </div>
+      <p id="setupDetail" class="small text-body-secondary mb-2 text-break"></p>
+      <div id="setupActions" class="d-flex flex-wrap gap-2"></div>
+    </div>
+  </div>
+
+  <div class="card shadow-sm">
+    <form id="form" class="card-body p-4" novalidate>
+      {% if server_mode %}
+      <div class="mb-3">
+        <label for="file" class="form-label">Arquivo de áudio ou vídeo</label>
+        <input type="file" id="file" class="form-control"
+               accept="audio/*,video/*,.mkv,.avi,.mp4,.mov,.webm,.flv,.wmv,.m4v,.ts,.mpg,.mpeg,.mp3,.flac,.wav,.m4a,.aac,.ogg,.opus,.wma,.aiff">
+        <div class="form-text">Até {{ max_upload_mb }} MB. O arquivo enviado é apagado do servidor assim que o processamento termina; a legenda, assim que você a baixa.</div>
+      </div>
+      {% else %}
+      <div class="mb-3">
+        <label for="path" class="form-label">Arquivo de áudio ou vídeo</label>
+        <div class="input-group">
+          <input type="text" id="path" class="form-control" placeholder="C:\Videos\aula.mp4" autocomplete="off" required>
+          <button type="button" id="btnBrowse" class="btn btn-outline-secondary">Procurar…</button>
+        </div>
+        <div class="form-text">mkv, avi, mp4, mov, webm, mp3, flac, wav, m4a, ogg, opus…</div>
+      </div>
+      {% endif %}
+
+      <div class="row g-3 mb-4">
+        <div class="col-md-5">
+          <label for="language" class="form-label">Idioma da legenda</label>
+          <select id="language" class="form-select"></select>
+        </div>
+        <div class="col-md-7">
+          <label for="model" class="form-label">Modelo Ollama (com áudio)</label>
+          <div class="input-group">
+            <select id="model" class="form-select"></select>
+            <button type="button" id="btnRefresh" class="btn btn-outline-secondary" title="Atualizar modelos">&#8635;</button>
+          </div>
+          <div id="modelHint" class="form-text"></div>
+        </div>
+      </div>
+
+      <div class="d-flex flex-wrap gap-2">
+        <button type="submit" id="btnStart" class="btn btn-primary px-4">Gerar legenda</button>
+        <button type="button" id="btnCancel" class="btn btn-outline-danger d-none">Cancelar</button>
+        <button type="button" id="btnClear" class="btn btn-outline-secondary ms-auto">Limpar</button>
+      </div>
+
+      <div id="progressBox" class="mt-4 d-none">
+        <div class="d-flex justify-content-between small mb-1">
+          <span id="stage">—</span><span id="percent">0%</span>
+        </div>
+        <div class="progress" role="progressbar" aria-label="Progresso" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div id="bar" class="progress-bar progress-bar-striped progress-bar-animated" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <div id="alert" class="alert mt-4 mb-0 d-none" role="alert"></div>
+    </form>
+  </div>
+  <p class="text-center text-body-secondary small mt-3 mb-0">Processamento 100% local · FFmpeg + Ollama · v{{ version }}</p>
+</main>
+
+{% if not server_mode %}
+<div class="modal fade" id="browseModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title fs-6">Selecionar arquivo</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+      </div>
+      <div class="modal-body p-0">
+        <div id="browsePath" class="px-3 py-2 border-bottom small text-break bg-body-tertiary"></div>
+        <div id="browseList" class="list-group list-group-flush"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="settingsModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <form id="settingsForm" class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title fs-6">Configurações</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label for="setHost" class="form-label">Servidor Ollama</label>
+          <input type="text" id="setHost" class="form-control" placeholder="http://127.0.0.1:11434">
+          <div class="form-text">Se for local e estiver parado, o app o inicia. Modelos usam a pasta padrão do Ollama.</div>
+        </div>
+        <div class="mb-3">
+          <label for="setFfmpeg" class="form-label">FFmpeg (pasta ou executável)</label>
+          <input type="text" id="setFfmpeg" class="form-control" placeholder="Em branco = detectar automaticamente">
+          <div class="form-text">Ordem automática: FFmpeg do sistema (PATH) → pasta <code>ffmpeg/</code> do app → baixa para essa pasta se não existir.
+            <span id="ffmpegInfo" class="d-block text-break"></span></div>
+        </div>
+        <div class="mb-3">
+          <label for="setBase" class="form-label">Modelo base</label>
+          <input type="text" id="setBase" class="form-control" placeholder="gemma4:e4b">
+          <div class="form-text">Baixado na inicialização apenas se não houver nenhum modelo com áudio.</div>
+        </div>
+        <div class="form-check mb-3">
+          <input class="form-check-input" type="checkbox" id="setAuto">
+          <label class="form-check-label" for="setAuto">Baixar o modelo base automaticamente</label>
+        </div>
+        <div class="mb-1">
+          <label for="setChunk" class="form-label">Duração dos trechos (segundos)</label>
+          <input type="number" id="setChunk" class="form-control" min="5" max="28" step="1">
+          <div class="form-text">Entre 5 e 28. Trechos menores tendem a errar menos, mas demoram mais.</div>
+        </div>
+        <div id="settingsAlert" class="alert alert-danger mt-3 mb-0 d-none"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Salvar e verificar</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endif %}
+
+<script>window.APP = { server: {{ 'true' if server_mode else 'false' }} };</script>
+<script src="{{ url_for('static', filename='vendor/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

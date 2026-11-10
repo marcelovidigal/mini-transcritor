@@ -1,0 +1,10 @@
+build/
+dist/
+__pycache__/
+.pytest_cache/
+.venv/
+output/
+*.log
+ffmpeg/
+.env
+server_data/

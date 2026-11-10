@@ -1,0 +1,14 @@
+.git
+.github
+.env
+.venv
+__pycache__
+.pytest_cache
+build
+dist
+ffmpeg
+server_data
+output
+tests
+docs
+*.log

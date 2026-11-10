@@ -1,0 +1,7 @@
+# HTTPS automático (Let's Encrypt) para o domínio definido em DOMAIN (.env).
+{$DOMAIN} {
+	request_body {
+		max_size 600MB   # um pouco acima de MAX_UPLOAD_MB
+	}
+	reverse_proxy app:8000
+}

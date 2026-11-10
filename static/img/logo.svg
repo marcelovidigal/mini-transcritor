@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Mini Transcritor">
+  <rect width="64" height="64" rx="14" fill="#0d6efd"/>
+  <g fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round">
+    <path d="M12 30v4M19 24v16M26 18v28M33 26v12M40 21v22M47 28v8M54 31v2"/>
+  </g>
+  <rect x="12" y="49" width="28" height="4" rx="2" fill="#fff"/>
+  <rect x="44" y="49" width="8" height="4" rx="2" fill="#fff" opacity=".6"/>
+</svg>
