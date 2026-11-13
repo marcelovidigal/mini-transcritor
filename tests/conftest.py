@@ -5,6 +5,8 @@ import tempfile
 
 os.environ["MINITRANSCRITOR_FFMPEG_DIR"] = tempfile.mkdtemp(prefix="mt_test_ff_")  # nunca baixa/escreve no projeto
 os.environ["MINITRANSCRITOR_HOME"] = tempfile.mkdtemp(prefix="mt_test_home_")  # nunca toca nas settings reais
+for _var in ("HF_TOKEN", "HUGGING_FACE_HUB_TOKEN", "MT_DEVICE"):  # testes herméticos: nada do ambiente do desenvolvedor entra
+    os.environ.pop(_var, None)
 
 import pytest
 
