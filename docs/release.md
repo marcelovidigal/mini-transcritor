@@ -27,7 +27,7 @@ O workflow `release.yml` é a **entrega contínua (CD)**. Ele roda a cada push n
 | `git push` em `dev`/`main` ou PR para a `main` | **CI** (`ci.yml`): roda os testes em Windows, Linux e macOS. **Não gera release.** |
 | Merge na `main` com versão **nova** em `version.py` | **CD** (`release.yml`): testa, compila as 5 plataformas, publica o Release (a tag `vX.Y.Z` é criada junto) e a imagem Docker. |
 | Merge na `main` com a **mesma** versão | Nada é compilado nem publicado (o job "Decidir o que fazer" avisa e encerra). |
-| Execução manual do workflow *Release* com `publish` desmarcado | Gera os 5 artefatos (baixáveis na aba *Actions*) para **conferência**. Nada é publicado. |
+| Execução manual do workflow *Release* com `publish` desmarcado | Gera os 5 artefatos (baixáveis na aba *Actions*) e **compila a imagem Docker sem enviá-la** (valida o `Dockerfile`), para **conferência**. Nada é publicado. |
 | Execução manual com `publish` marcado | Gera e **publica** o release e a imagem `v<versão de version.py>`; falha se esse Release já existe. |
 | Push da tag `vX.Y.Z` | Valida que a tag = `transcritor/version.py`, testa, compila as 5 plataformas e **publica**. Tags com `-` (ex.: `v1.1.0-rc1`) viram *pre-release*. |
 
