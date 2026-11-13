@@ -16,7 +16,7 @@ Duas branches fixas, sem burocracia extra:
 
 ## Release
 
-Só a partir da `main`: suba a versão em `transcritor/version.py`, faça o merge na `main` e crie a tag `vX.Y.Z` (igual à versão). Detalhes e a execução manual sem publicar: [release.md](release.md).
+O release é automático e acontece **no merge `dev` → `main`, quando a versão em `transcritor/version.py` é nova** (ainda sem Release/tag `vX.Y.Z`): o pipeline compila os executáveis, publica o Release e a imagem Docker (GitHub Packages). Merge com a mesma versão não publica nada. Passo a passo, a execução manual sem publicar e o caminho por tag: [release.md](release.md).
 
 ## Regras da `main` (GitHub → Settings → Branches → Add rule, padrão `main`)
 

@@ -16,6 +16,9 @@ services:
               capabilities: [gpu]
 
   app:
+    # Imagem pronta publicada pelo CD (GitHub Packages): `docker compose pull app && docker compose up -d`.
+    # Sem ela (ou sem acesso ao pacote), `docker compose up -d --build` compila localmente a partir do Dockerfile.
+    image: ghcr.io/marcelovidigal/mini-transcritor:${APP_TAG:-latest}
     build: .
     restart: unless-stopped
     env_file: .env

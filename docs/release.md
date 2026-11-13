@@ -16,24 +16,29 @@ Artefatos por release:
 
 Cada arquivo acompanha um `.sha256`. macOS Intel não está na matriz (há uma linha comentada em `release.yml`; confirme o rótulo do runner Intel disponível antes de ativar).
 
-## 2. Estratégia: você decide quando há release
+## 2. Estratégia: o merge na `main` lança, mas só quando a versão é nova
+
+O workflow `release.yml` é a **entrega contínua (CD)**. Ele roda a cada push na `main` (o merge do pull request `dev` → `main`), mas **só publica se a versão de `transcritor/version.py` ainda não tem Release**. Merge comum (mesma versão) não compila nem publica nada. Quando publica, faz duas coisas: o **Release** do GitHub com os 4 executáveis e a **imagem Docker** do servidor em `ghcr.io/marcelovidigal/mini-transcritor:<versão>` e `:latest` (pré-releases, versão com `-`, não recebem `:latest`).
+
 
 | Situação | O que acontece |
 |----------|----------------|
-| `git push` / PR | **CI** (`ci.yml`): roda os testes em Windows, Linux e macOS. **Não gera release.** |
+| `git push` em `dev`/`main` ou PR para a `main` | **CI** (`ci.yml`): roda os testes em Windows, Linux e macOS. **Não gera release.** |
+| Merge na `main` com versão **nova** em `version.py` | **CD** (`release.yml`): testa, compila as 4 plataformas, publica o Release (a tag `vX.Y.Z` é criada junto) e a imagem Docker. |
+| Merge na `main` com a **mesma** versão | Nada é compilado nem publicado (o job "Decidir o que fazer" avisa e encerra). |
 | Execução manual do workflow *Release* com `publish` desmarcado | Gera os 4 artefatos (baixáveis na aba *Actions*) para **conferência**. Nada é publicado. |
-| Execução manual com `publish` marcado | Gera e **publica** o release `v<versão de version.py>`. |
+| Execução manual com `publish` marcado | Gera e **publica** o release e a imagem `v<versão de version.py>`; falha se esse Release já existe. |
 | Push da tag `vX.Y.Z` | Valida que a tag = `transcritor/version.py`, testa, compila as 4 plataformas e **publica**. Tags com `-` (ex.: `v1.1.0-rc1`) viram *pre-release*. |
 
 Cada compilação executa, nesta ordem: **testes → build do executável → smoke test do executável → artefato (+ sha256)**. A publicação só ocorre se todas as plataformas passaram.
 
 ### Passo a passo de um release
 
-1. Altere `transcritor/version.py` (fonte única da versão) e atualize notas/docs.
+1. Na `dev`, altere `transcritor/version.py` (fonte única da versão) e atualize notas/docs.
 2. (Opcional) Ensaio local na sua plataforma: `python release.py` — roda testes, build, smoke test e gera o arquivo em `dist/`, sem publicar.
-3. Commit e push em `main`; aguarde o CI ficar verde.
-4. Publique: `git tag v1.1.0 && git push origin v1.1.0`. O workflow cria o release com os 4 arquivos e notas geradas automaticamente.
-5. Se quiser apenas conferir antes: *Actions → Release → Run workflow* com `publish` desmarcado.
+3. Confira antes de lançar: *Actions → Release → Run workflow* na `dev`/`main` com `publish` desmarcado (gera os 4 artefatos para baixar e testar).
+4. Abra o pull request `dev` → `main`; com a CI verde, faça o merge (squash). **O merge publica** o Release e a imagem Docker.
+5. Caminho alternativo manual: `git tag v1.1.0 && git push origin v1.1.0` (a tag precisa bater com `version.py`; se o Release já existir, nada é feito).
 
 `python release.py --publish` publica pelo `gh` **somente o artefato do seu SO**; use-o apenas para releases só-Windows ou emergências. O release completo vem do CI.
 

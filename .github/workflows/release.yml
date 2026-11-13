@@ -1,20 +1,68 @@
-# Release: só acontece quando VOCÊ decide.
-#   - Push de uma tag vX.Y.Z           -> testa, compila todos os SO e PUBLICA o Release.
-#   - Execução manual (Actions > Run)   -> compila; só publica se marcar "publish".
+# Entrega contínua (CD): compila os executáveis, publica o Release e a imagem Docker (GitHub Packages).
+#
+# Quando roda:
+#   - Merge/push na `main`  -> SÓ publica se a versão de transcritor/version.py ainda NÃO tem Release (tag vX.Y.Z).
+#                              Se já tem, nada é compilado nem publicado (merge comum, sem versão nova).
+#   - Push de uma tag vX.Y.Z -> caminho manual equivalente (a tag precisa bater com version.py).
+#   - Execução manual (Actions > Release > Run workflow) -> compila para conferência; só publica se marcar "publish".
+# Para lançar uma versão: suba transcritor/version.py no pull request dev -> main (ver docs/fluxo-git.md).
 name: Release
 
 on:
   push:
+    branches: [main]
     tags: ["v*"]
   workflow_dispatch:
     inputs:
       publish:
-        description: "Publicar o Release no GitHub (senão, apenas gera os artefatos para conferência)"
+        description: "Publicar o Release e a imagem Docker (senão, apenas gera os artefatos para conferência)"
         type: boolean
         default: false
 
+concurrency:
+  group: release
+  cancel-in-progress: false
+
 jobs:
+  plan:
+    name: Decidir o que fazer
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      version: ${{ steps.d.outputs.version }}
+      build: ${{ steps.d.outputs.build }}
+      publish: ${{ steps.d.outputs.publish }}
+      prerelease: ${{ steps.d.outputs.prerelease }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: d
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PUBLISH_INPUT: ${{ inputs.publish }}
+        run: |
+          VER=$(python3 -c "from transcritor.version import __version__ as v; print(v)")
+          PRE=false; case "$VER" in *-*) PRE=true;; esac
+          EXISTS=false; gh release view "v$VER" >/dev/null 2>&1 && EXISTS=true
+          BUILD=false; PUBLISH=false
+          case "$GITHUB_EVENT_NAME" in
+            workflow_dispatch)
+              BUILD=true
+              if [ "$PUBLISH_INPUT" = "true" ]; then
+                [ "$EXISTS" = "false" ] || { echo "::error::Já existe o Release v$VER. Suba a versão em transcritor/version.py."; exit 1; }
+                PUBLISH=true
+              fi ;;
+            *)  # push na main ou em tag: só publica se esta versão ainda não tem Release
+              if [ "$EXISTS" = "false" ]; then BUILD=true; PUBLISH=true; else echo "::notice::v$VER já tem Release: nada a publicar."; fi ;;
+          esac
+          echo "version=$VER" >> "$GITHUB_OUTPUT"; echo "prerelease=$PRE" >> "$GITHUB_OUTPUT"
+          echo "build=$BUILD" >> "$GITHUB_OUTPUT"; echo "publish=$PUBLISH" >> "$GITHUB_OUTPUT"
+          echo "versão=$VER release_existe=$EXISTS build=$BUILD publish=$PUBLISH"
+
   build:
+    needs: plan
+    if: needs.plan.outputs.build == 'true'
     strategy:
       fail-fast: false
       matrix:
@@ -54,8 +102,9 @@ jobs:
           if-no-files-found: error
 
   publish:
-    needs: build
-    if: startsWith(github.ref, 'refs/tags/v') || inputs.publish
+    name: Publicar o Release
+    needs: [plan, build]
+    if: needs.plan.outputs.publish == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -65,10 +114,43 @@ jobs:
         with:
           path: assets
           merge-multiple: true
-      - name: Criar Release único com os arquivos de todos os SO
+      - name: Criar Release único com os arquivos de todos os SO (a tag vX.Y.Z é criada junto)
         env:
           GH_TOKEN: ${{ github.token }}
+          VER: ${{ needs.plan.outputs.version }}
+          PRE: ${{ needs.plan.outputs.prerelease }}
         run: |
-          VER=$(python3 -c "from transcritor.version import __version__ as v; print(v)")
-          PRE=""; case "$VER" in *-*) PRE="--prerelease";; esac
-          gh release create "v$VER" assets/* --target "$GITHUB_SHA" --title "Mini Transcritor v$VER" --generate-notes $PRE
+          FLAG=""; [ "$PRE" = "true" ] && FLAG="--prerelease"
+          gh release create "v$VER" assets/* --target "$GITHUB_SHA" --title "Mini Transcritor v$VER" --generate-notes $FLAG
+
+  docker:
+    name: Publicar a imagem Docker (GitHub Packages)
+    needs: [plan, build]
+    if: needs.plan.outputs.publish == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+      - name: Nome da imagem (minúsculas) e etiquetas
+        id: img
+        env:
+          VER: ${{ needs.plan.outputs.version }}
+          PRE: ${{ needs.plan.outputs.prerelease }}
+        run: |
+          IMG="ghcr.io/${GITHUB_REPOSITORY,,}"
+          TAGS="$IMG:$VER"; [ "$PRE" = "true" ] || TAGS="$TAGS,$IMG:latest"   # pré-release não vira "latest"
+          echo "tags=$TAGS" >> "$GITHUB_OUTPUT"
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.img.outputs.tags }}
+          labels: org.opencontainers.image.source=https://github.com/${{ github.repository }}

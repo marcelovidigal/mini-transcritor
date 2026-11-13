@@ -76,7 +76,9 @@ Requisitos: servidor Linux com Docker e **GPU NVIDIA** + [NVIDIA Container Toolk
 
 ```bash
 cp .env.example .env      # preencha DOMAIN, BASE_URL, GOOGLE_*, SECRET_KEY, ALLOWED_*
-docker compose up -d --build
+docker compose up -d --build        # compila a imagem aqui
+# ou, com a imagem pronta publicada pelo CD (GitHub Packages):
+docker compose pull app && docker compose up -d
 ```
 
 Três serviços: **caddy** (HTTPS automático, único com portas publicadas) → **app** (waitress, 1 processo/8 threads — o estado da fila fica na memória) → **ollama** (rede interna, **nunca exposto**). Na primeira subida o app baixa o modelo base (`gemma4:e4b`) automaticamente; acompanhe pela tela ("Preparando o ambiente") ou `docker compose logs -f app`. Para outros modelos: `docker compose exec ollama ollama pull <modelo>:<tag>` com a tag descritiva (ex.: `gemma4:e4b`, nunca `latest`).
