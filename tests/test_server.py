@@ -335,3 +335,12 @@ def test_startup_purges_leftovers(tmp_path):
 def test_index_shows_user_and_server_mode(srv):
     html = srv.client().get("/").get_data(as_text=True)
     assert ALICE in html and 'type="file"' in html and "btnBrowse" not in html and "btnSettings" not in html
+
+
+def test_server_config_repr_does_not_expose_secrets():
+    from transcritor.webserver import ServerConfig
+
+    cfg = ServerConfig(secret_key="segredo-da-sessao-123456", google_client_id="id-publico.apps.googleusercontent.com",
+                       google_client_secret="GOCSPX-nao-pode-aparecer")
+    text = repr(cfg) + str(cfg)
+    assert "segredo-da-sessao" not in text and "GOCSPX" not in text

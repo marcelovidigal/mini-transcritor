@@ -30,9 +30,9 @@ def _csv(value: str) -> set:
 
 @dataclass
 class ServerConfig:
-    secret_key: str
+    secret_key: str = field(repr=False)  # fora do repr: nunca aparece em print/log/traceback da configuração
     google_client_id: str
-    google_client_secret: str
+    google_client_secret: str = field(repr=False)
     allowed_emails: set = field(default_factory=set)
     allowed_domains: set = field(default_factory=set)
     base_url: str = ""  # ex.: https://transcritor.exemplo.com (define o redirect URI do Google)
