@@ -62,7 +62,7 @@ python release.py               # dry-run: testes -> build -> smoke test -> zip/
 python release.py --publish     # idem + gh release create (pede confirmação)
 ```
 
-O release **oficial**, com todas as plataformas, sai do GitHub Actions ao enviar uma tag `vX.Y.Z` — veja [docs/release.md](docs/release.md).
+O release **oficial**, com todas as plataformas, sai do GitHub Actions ao enviar uma tag `vX.Y.Z` — veja [docs/release.md](docs/release.md). O trabalho segue o fluxo de duas branches (`dev` e `main`) descrito em [docs/fluxo-git.md](docs/fluxo-git.md).
 
 ## Configuração
 

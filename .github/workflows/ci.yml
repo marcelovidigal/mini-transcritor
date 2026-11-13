@@ -1,10 +1,11 @@
-# Integração contínua: roda os testes a cada push/PR. NÃO gera release.
+# Integração contínua: roda os testes a cada push em dev/main e a cada PR para a main. NÃO gera release.
 name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, dev]
   pull_request:
+    branches: [main]
 
 jobs:
   test:
