@@ -1,0 +1,2 @@
+# Só o necessário para gerar o executável (usado pelo release.yml e por build.py).
+pyinstaller>=6.0

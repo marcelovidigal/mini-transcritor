@@ -84,7 +84,7 @@ jobs:
       - name: ffmpeg no macOS (Homebrew)
         if: runner.os == 'macOS'
         run: brew install ffmpeg
-      - run: pip install -r requirements.txt
+      - run: pip install -r requirements.txt -r requirements-build.txt   # PyInstaller (build.py)
       - name: Tag precisa bater com transcritor/version.py
         if: startsWith(github.ref, 'refs/tags/v')
         shell: bash
