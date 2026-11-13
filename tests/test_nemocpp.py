@@ -42,7 +42,8 @@ def test_preferred_backends_follow_the_machine():
     assert nm.preferred_backends("macos", "x86_64") == ["cpu"]
 
 
-def test_find_release_asset_skips_prereleases_and_falls_back_between_backends():
+def test_find_release_asset_skips_prereleases_and_falls_back_between_backends(monkeypatch):
+    monkeypatch.setattr(nm, "machine", lambda: ("windows", "x86_64"))  # os pacotes do teste são do Windows, qualquer que seja o SO do CI
     class R:
         def __init__(self, data):
             self.data = data

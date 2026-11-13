@@ -20,5 +20,9 @@ jobs:
           python-version: "3.12"
           cache: pip
       - uses: FedericoCarboni/setup-ffmpeg@v3   # os testes geram mídia sintética com ffmpeg
+        if: runner.os != 'macOS'   # esta ação só suporta x64; o runner macOS é arm64
+      - name: ffmpeg no macOS (Homebrew)
+        if: runner.os == 'macOS'
+        run: brew install ffmpeg
       - run: pip install -r requirements.txt
       - run: python -m pytest -q
