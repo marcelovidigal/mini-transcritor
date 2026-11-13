@@ -13,8 +13,9 @@ Artefatos por release:
 | `MiniTranscritor-vX.Y.Z-linux-x64.tar.gz` | Linux x86-64 | `ubuntu-latest` |
 | `MiniTranscritor-vX.Y.Z-linux-arm64.tar.gz` | Linux ARM64 | `ubuntu-24.04-arm` |
 | `MiniTranscritor-vX.Y.Z-macos-arm64.tar.gz` | macOS Apple Silicon | `macos-latest` |
+| `MiniTranscritor-vX.Y.Z-macos-x64.tar.gz` | macOS com processador Intel | `macos-15-intel` |
 
-Cada arquivo acompanha um `.sha256`. macOS Intel não está na matriz (há uma linha comentada em `release.yml`; confirme o rótulo do runner Intel disponível antes de ativar).
+Cada arquivo acompanha um `.sha256`. O rótulo `macos-15-intel` do runner Intel não foi conferido por execução: se o GitHub o aposentar ou renomear, o job do macOS Intel falha e a linha da matriz em `release.yml` precisa ser ajustada. Como a matriz tem `fail-fast: false`, os outros sistemas continuam, mas a publicação só ocorre se **todos** passarem.
 
 ## 2. Estratégia: o merge na `main` lança, mas só quando a versão é nova
 
@@ -24,11 +25,11 @@ O workflow `release.yml` é a **entrega contínua (CD)**. Ele roda a cada push n
 | Situação | O que acontece |
 |----------|----------------|
 | `git push` em `dev`/`main` ou PR para a `main` | **CI** (`ci.yml`): roda os testes em Windows, Linux e macOS. **Não gera release.** |
-| Merge na `main` com versão **nova** em `version.py` | **CD** (`release.yml`): testa, compila as 4 plataformas, publica o Release (a tag `vX.Y.Z` é criada junto) e a imagem Docker. |
+| Merge na `main` com versão **nova** em `version.py` | **CD** (`release.yml`): testa, compila as 5 plataformas, publica o Release (a tag `vX.Y.Z` é criada junto) e a imagem Docker. |
 | Merge na `main` com a **mesma** versão | Nada é compilado nem publicado (o job "Decidir o que fazer" avisa e encerra). |
-| Execução manual do workflow *Release* com `publish` desmarcado | Gera os 4 artefatos (baixáveis na aba *Actions*) para **conferência**. Nada é publicado. |
+| Execução manual do workflow *Release* com `publish` desmarcado | Gera os 5 artefatos (baixáveis na aba *Actions*) para **conferência**. Nada é publicado. |
 | Execução manual com `publish` marcado | Gera e **publica** o release e a imagem `v<versão de version.py>`; falha se esse Release já existe. |
-| Push da tag `vX.Y.Z` | Valida que a tag = `transcritor/version.py`, testa, compila as 4 plataformas e **publica**. Tags com `-` (ex.: `v1.1.0-rc1`) viram *pre-release*. |
+| Push da tag `vX.Y.Z` | Valida que a tag = `transcritor/version.py`, testa, compila as 5 plataformas e **publica**. Tags com `-` (ex.: `v1.1.0-rc1`) viram *pre-release*. |
 
 Cada compilação executa, nesta ordem: **testes → build do executável → smoke test do executável → artefato (+ sha256)**. A publicação só ocorre se todas as plataformas passaram.
 
@@ -36,7 +37,7 @@ Cada compilação executa, nesta ordem: **testes → build do executável → sm
 
 1. Na `dev`, altere `transcritor/version.py` (fonte única da versão) e atualize notas/docs.
 2. (Opcional) Ensaio local na sua plataforma: `python release.py` — roda testes, build, smoke test e gera o arquivo em `dist/`, sem publicar.
-3. Confira antes de lançar: *Actions → Release → Run workflow* na `dev`/`main` com `publish` desmarcado (gera os 4 artefatos para baixar e testar).
+3. Confira antes de lançar: *Actions → Release → Run workflow* na `dev`/`main` com `publish` desmarcado (gera os 5 artefatos para baixar e testar).
 4. Abra o pull request `dev` → `main`; com a CI verde, faça o merge (squash). **O merge publica** o Release e a imagem Docker.
 5. Caminho alternativo manual: `git tag v1.1.0 && git push origin v1.1.0` (a tag precisa bater com `version.py`; se o Release já existir, nada é feito).
 
@@ -59,4 +60,4 @@ Cada compilação executa, nesta ordem: **testes → build do executável → sm
 
 ## 5. Evoluções possíveis
 
-Assinatura de código (Windows) e assinatura + notarização (macOS); instalador (`.msi`/`.dmg`); download automático do FFmpeg em Linux/macOS; build macOS Intel.
+Assinatura de código (Windows) e assinatura + notarização (macOS); instalador (`.msi`/`.dmg`); download automático do FFmpeg em Linux/macOS.

@@ -29,7 +29,7 @@ O mesmo código atende os dois; o modo é só o ponto de entrada. Guia do servid
 
 ## Usando o executável (Windows)
 
-Baixe o arquivo da sua plataforma em *Releases* (`windows-x64`, `linux-x64`, `linux-arm64`, `macos-arm64`), extraia e execute `MiniTranscritor\MiniTranscritor.exe` (Linux/macOS: `./MiniTranscritor`). Uma janela de console (logs) abre junto com o navegador; **fechá-la encerra o app** (e o Ollama, se foi o app que o iniciou).
+Baixe o arquivo da sua plataforma em *Releases* (`windows-x64`, `linux-x64`, `linux-arm64`, `macos-arm64`, `macos-x64`), extraia e execute `MiniTranscritor\MiniTranscritor.exe` (Linux/macOS: `./MiniTranscritor`). Uma janela de console (logs) abre junto com o navegador; **fechá-la encerra o app** (e o Ollama, se foi o app que o iniciou).
 
 ## Executando a partir do código
 
