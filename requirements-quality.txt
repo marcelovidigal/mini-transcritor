@@ -1,0 +1,5 @@
+# Opção "Qualidade" (pipeline multiagente): Google ADK. Sem LiteLLM: o Ollama é usado pelo OllamaClient do projeto.
+# Dependência pesada: fica no .venv, fora do executável leve. Ver docs/proposta-multiagente.md.
+google-adk>=1.19
+# Modo de qualidade 1: o porteiro de fala usa o VAD Silero (ONNX) que vem com o faster-whisper (requirements-engines.txt; usa onnxruntime, sem PyTorch).
+# Sem ele o porteiro se desliga sozinho e o modo transcreve todos os fragmentos.

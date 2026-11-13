@@ -1,0 +1,1 @@
+ Also return critique (one or two short sentences: what the wrong version(s) got wrong, for example misheard words or names) and terms (array with the proper names and technical terms you actually hear, spelled correctly; empty if none).

@@ -19,9 +19,11 @@ O navegador abre em <http://127.0.0.1:5000> (ou em outra porta livre, informada 
 
 1. **Arquivo** — digite o caminho completo (ex.: `D:\Videos\aula.mkv`) ou clique em **Procurar…** e navegue pelas pastas; só pastas e arquivos de mídia são exibidos. Clique no arquivo para selecioná-lo.
 2. **Idioma da legenda** — escolha o idioma de saída (ex.: Português (Brasil)).
-3. **Modelo Ollama** — lista só modelos com suporte a áudio, em dois grupos: **✔ Instalados nesta máquina** (no topo) e **Recomendados — serão baixados ao gerar**. A família Gemma vem primeiro. Se escolher um não instalado, ele é baixado antes de gerar (a barra mostra o download). Use ↻ após instalar modelos por fora.
+3. **Motor de transcrição** — *Ollama* (padrão) ou, se instalados, *OpenAI Whisper*, *faster-whisper* e *WhisperX* (ver `requirements-engines.txt`). Motor não instalado aparece com o comando `pip` para instalar. No WhisperX há ainda a caixa **Identificar quem fala** (exige o token do Hugging Face em Configurações). Nos motores Whisper a lista mostra **✔ Baixados nesta máquina** e **Disponíveis — serão baixados ao gerar**; o modelo só é baixado quando você o escolhe e clica em *Gerar legenda*.
+3b. **Modelo** (Ollama) — lista só modelos com suporte a áudio, em dois grupos: **✔ Instalados nesta máquina** (no topo) e **Recomendados — serão baixados ao gerar**. A família Gemma vem primeiro. Se escolher um não instalado, ele é baixado antes de gerar (a barra mostra o download). Use ↻ após instalar modelos por fora.
+3c. **Contexto ou glossário** (opcional) — tema, nomes próprios e termos técnicos (até 500 caracteres); ajuda o modelo a acertar o vocabulário.
 4. Clique em **Gerar legenda**. A barra mostra a etapa atual: *validando → extraindo áudio → transcrevendo trecho N de M → gravando*.
-5. Ao terminar, aparece o caminho do `.srt` (salvo **ao lado do arquivo original**, como `aula.pt-BR.srt`) e o botão **Baixar .srt**.
+5. Ao terminar, a mensagem mostra quantas legendas saíram e o tempo gasto (ex.: *42 s para 600 s de áudio*). Aparece o caminho do `.srt` (salvo **ao lado do arquivo original**, como `aula.pt-BR.srt`) e o botão **Baixar .srt**.
 
 Botões extras: **Cancelar** (durante o processamento) e **Limpar** (zera o formulário).
 
@@ -40,6 +42,8 @@ O botão **Configurações** (canto superior direito) permite ajustar:
 | Modelo base | Modelo baixado na inicialização **somente** se não houver nenhum com áudio. |
 | Baixar automaticamente | Desligue para nunca baixar nada sem você pedir. |
 | Duração dos trechos | 5–28 s (padrão 12). |
+| Dispositivo dos motores Whisper | *Automático* (padrão) escolhe CUDA > Intel XPU > Metal > CPU; ou fixe um. O faster-whisper só usa CPU ou CUDA. Dispositivo inexistente na máquina é recusado com o motivo. |
+| Token do Hugging Face | Só para a diarização do WhisperX. Fica salvo localmente e nunca volta à tela; em branco = manter. |
 
 Ao salvar, o app refaz a verificação com os novos valores.
 
@@ -55,6 +59,8 @@ Ao salvar, o app refaz a verificação com os novos valores.
 | Texto com erros | Tente outro modelo (maior nem sempre é melhor) ou reduza a duração dos trechos em *Configurações* (ex.: 8 s). Revise a legenda. |
 | Demora | Depende do modelo e do hardware; cada ~12 s de mídia gera uma chamada ao modelo. |
 | Tempos levemente fora | Esperado: os tempos seguem os trechos de áudio, não as palavras. |
+
+Avisos e detalhes técnicos de cada trabalho ficam no arquivo de log, não na tela: `%LOCALAPPDATA%\MiniTranscritor\logs\mini-transcritor.log` (Windows). Abra-o ao investigar uma falha ou comparar execuções.
 
 ## 7. Atualizar a lista de modelos recomendados
 

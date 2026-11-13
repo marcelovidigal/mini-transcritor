@@ -1,0 +1,464 @@
+{
+  "singles": {
+    "ollama:gemma4:e2b": {
+      "wer": {
+        "S0": 0.1227364185110664,
+        "S1": 0.10648801128349789,
+        "total": 0.11481608800275009
+      },
+      "rtf": 0.041
+    },
+    "ollama:gemma4:e4b": {
+      "wer": {
+        "S0": 0.059691482226693494,
+        "S1": 0.09873060648801128,
+        "total": 0.07872121003781368
+      },
+      "rtf": 0.048
+    },
+    "whisper:medium": {
+      "wer": {
+        "S0": 0.07243460764587525,
+        "S1": 0.057122708039492244,
+        "total": 0.06497078033688553
+      },
+      "rtf": 0.092
+    },
+    "whisper:large-v3": {
+      "wer": {
+        "S0": 0.052313883299798795,
+        "S1": 0.0465444287729196,
+        "total": 0.049501546923341355
+      },
+      "rtf": 0.132
+    },
+    "whisper:large-v3-turbo": {
+      "wer": {
+        "S0": 0.05767940979208585,
+        "S1": 0.038787023977433006,
+        "total": 0.048470264695771745
+      },
+      "rtf": 0.049
+    },
+    "ollama:nemotron-3.5-bolt:e4b-q4_K_M": {
+      "wer": {
+        "S0": 0.06572769953051644,
+        "S1": 0.13610719322990128,
+        "total": 0.10003437607425232
+      },
+      "rtf": 0.076
+    }
+  },
+  "pairs": [
+    {
+      "g1": "ollama:gemma4:e2b",
+      "g2": "ollama:gemma4:e4b",
+      "reviewer": "gemma4:e4b",
+      "wer": {
+        "S0": 0.05499664654594232,
+        "S1": 0.09943582510578279,
+        "total": 0.07665864558267446
+      },
+      "rtf": 0.124,
+      "flagged": 54,
+      "fragments": 106,
+      "improved": 8,
+      "worsened": 5,
+      "neutral": 41,
+      "oracle_all": 0.065,
+      "oracle_gate": 0.0663,
+      "g2_alone": 0.0787
+    },
+    {
+      "g1": "ollama:gemma4:e2b",
+      "g2": "whisper:medium",
+      "reviewer": "gemma4:e4b",
+      "wer": {
+        "S0": 0.06505700871898056,
+        "S1": 0.06276445698166432,
+        "total": 0.06393949810931591
+      },
+      "rtf": 0.167,
+      "flagged": 63,
+      "fragments": 106,
+      "improved": 9,
+      "worsened": 9,
+      "neutral": 45,
+      "oracle_all": 0.0426,
+      "oracle_gate": 0.0437,
+      "g2_alone": 0.065
+    },
+    {
+      "g1": "ollama:gemma4:e2b",
+      "g2": "whisper:large-v3",
+      "reviewer": "gemma4:e4b",
+      "wer": {
+        "S0": 0.04158283031522468,
+        "S1": 0.05077574047954866,
+        "total": 0.046063939498109316
+      },
+      "rtf": 0.202,
+      "flagged": 55,
+      "fragments": 106,
+      "improved": 5,
+      "worsened": 7,
+      "neutral": 43,
+      "oracle_all": 0.0364,
+      "oracle_gate": 0.0385,
+      "g2_alone": 0.0495
+    },
+    {
+      "g1": "ollama:gemma4:e2b",
+      "g2": "whisper:large-v3-turbo",
+      "reviewer": "gemma4:e4b",
+      "wer": {
+        "S0": 0.0482897384305835,
+        "S1": 0.04372355430183357,
+        "total": 0.046063939498109316
+      },
+      "rtf": 0.12,
+      "flagged": 55,
+      "fragments": 106,
+      "improved": 2,
+      "worsened": 7,
+      "neutral": 46,
+      "oracle_all": 0.0347,
+      "oracle_gate": 0.0358,
+      "g2_alone": 0.0485
+    },
+    {
+      "g1": "ollama:gemma4:e4b",
+      "g2": "whisper:medium",
+      "reviewer": "gemma4:e4b",
+      "wer": {
+        "S0": 0.05298457411133468,
+        "S1": 0.07757404795486601,
+        "total": 0.06497078033688553
+      },
+      "rtf": 0.168,
+      "flagged": 52,
+      "fragments": 106,
+      "improved": 12,
+      "worsened": 13,
+      "neutral": 27,
+      "oracle_all": 0.0375,
+      "oracle_gate": 0.0406,
+      "g2_alone": 0.065
+    },
+    {
+      "g1": "ollama:gemma4:e4b",
+      "g2": "whisper:large-v3",
+      "reviewer": "gemma4:e4b",
+      "wer": {
+        "S0": 0.042924211938296444,
+        "S1": 0.06981664315937941,
+        "total": 0.056033001031282226
+      },
+      "rtf": 0.207,
+      "flagged": 51,
+      "fragments": 106,
+      "improved": 6,
+      "worsened": 14,
+      "neutral": 31,
+      "oracle_all": 0.0309,
+      "oracle_gate": 0.0327,
+      "g2_alone": 0.0495
+    },
+    {
+      "g1": "ollama:gemma4:e4b",
+      "g2": "whisper:large-v3-turbo",
+      "reviewer": "gemma4:e4b",
+      "wer": {
+        "S0": 0.042924211938296444,
+        "S1": 0.06699576868829338,
+        "total": 0.054657958061189414
+      },
+      "rtf": 0.123,
+      "flagged": 49,
+      "fragments": 106,
+      "improved": 5,
+      "worsened": 14,
+      "neutral": 30,
+      "oracle_all": 0.0316,
+      "oracle_gate": 0.0344,
+      "g2_alone": 0.0485
+    },
+    {
+      "g1": "ollama:gemma4:e2b",
+      "g2": "ollama:gemma4:e4b",
+      "reviewer": "nemotron-3.5-bolt:e4b-q4_K_M",
+      "wer": {
+        "S0": 0.055667337357478204,
+        "S1": 0.10296191819464035,
+        "total": 0.07872121003781368
+      },
+      "rtf": 0.131,
+      "flagged": 54,
+      "fragments": 106,
+      "improved": 10,
+      "worsened": 9,
+      "neutral": 35,
+      "oracle_all": 0.065,
+      "oracle_gate": 0.0663,
+      "g2_alone": 0.0787
+    },
+    {
+      "g1": "ollama:gemma4:e2b",
+      "g2": "whisper:medium",
+      "reviewer": "nemotron-3.5-bolt:e4b-q4_K_M",
+      "wer": {
+        "S0": 0.052313883299798795,
+        "S1": 0.06346967559943582,
+        "total": 0.057751804743898245
+      },
+      "rtf": 0.175,
+      "flagged": 63,
+      "fragments": 106,
+      "improved": 11,
+      "worsened": 11,
+      "neutral": 41,
+      "oracle_all": 0.0426,
+      "oracle_gate": 0.0437,
+      "g2_alone": 0.065
+    },
+    {
+      "g1": "ollama:gemma4:e2b",
+      "g2": "whisper:large-v3",
+      "reviewer": "nemotron-3.5-bolt:e4b-q4_K_M",
+      "wer": {
+        "S0": 0.042924211938296444,
+        "S1": 0.056417489421720736,
+        "total": 0.049501546923341355
+      },
+      "rtf": 0.21,
+      "flagged": 55,
+      "fragments": 106,
+      "improved": 5,
+      "worsened": 10,
+      "neutral": 40,
+      "oracle_all": 0.0364,
+      "oracle_gate": 0.0385,
+      "g2_alone": 0.0495
+    },
+    {
+      "g1": "ollama:gemma4:e2b",
+      "g2": "whisper:large-v3-turbo",
+      "reviewer": "nemotron-3.5-bolt:e4b-q4_K_M",
+      "wer": {
+        "S0": 0.05030181086519115,
+        "S1": 0.045839210155148094,
+        "total": 0.04812650395324854
+      },
+      "rtf": 0.126,
+      "flagged": 55,
+      "fragments": 106,
+      "improved": 3,
+      "worsened": 8,
+      "neutral": 44,
+      "oracle_all": 0.0347,
+      "oracle_gate": 0.0358,
+      "g2_alone": 0.0485
+    },
+    {
+      "g1": "ollama:gemma4:e4b",
+      "g2": "whisper:medium",
+      "reviewer": "nemotron-3.5-bolt:e4b-q4_K_M",
+      "wer": {
+        "S0": 0.05432595573440644,
+        "S1": 0.076163610719323,
+        "total": 0.06497078033688553
+      },
+      "rtf": 0.174,
+      "flagged": 52,
+      "fragments": 106,
+      "improved": 14,
+      "worsened": 16,
+      "neutral": 22,
+      "oracle_all": 0.0375,
+      "oracle_gate": 0.0406,
+      "g2_alone": 0.065
+    },
+    {
+      "g1": "ollama:gemma4:e4b",
+      "g2": "whisper:large-v3",
+      "reviewer": "nemotron-3.5-bolt:e4b-q4_K_M",
+      "wer": {
+        "S0": 0.04426559356136821,
+        "S1": 0.05218617771509168,
+        "total": 0.04812650395324854
+      },
+      "rtf": 0.213,
+      "flagged": 51,
+      "fragments": 106,
+      "improved": 7,
+      "worsened": 15,
+      "neutral": 29,
+      "oracle_all": 0.0309,
+      "oracle_gate": 0.0327,
+      "g2_alone": 0.0495
+    },
+    {
+      "g1": "ollama:gemma4:e4b",
+      "g2": "whisper:large-v3-turbo",
+      "reviewer": "nemotron-3.5-bolt:e4b-q4_K_M",
+      "wer": {
+        "S0": 0.04560697518443997,
+        "S1": 0.04442877291960508,
+        "total": 0.045032657270539705
+      },
+      "rtf": 0.129,
+      "flagged": 49,
+      "fragments": 106,
+      "improved": 6,
+      "worsened": 13,
+      "neutral": 30,
+      "oracle_all": 0.0316,
+      "oracle_gate": 0.0344,
+      "g2_alone": 0.0485
+    },
+    {
+      "g1": "ollama:gemma4:e2b",
+      "g2": "ollama:gemma4:e4b",
+      "reviewer": "gemma4:12b",
+      "wer": {
+        "S0": 0.056338028169014086,
+        "S1": 0.09379407616361073,
+        "total": 0.07459608112753524
+      },
+      "rtf": 1.214,
+      "flagged": 54,
+      "fragments": 106,
+      "improved": 11,
+      "worsened": 5,
+      "neutral": 38,
+      "oracle_all": 0.065,
+      "oracle_gate": 0.0663,
+      "g2_alone": 0.0787
+    },
+    {
+      "g1": "ollama:gemma4:e2b",
+      "g2": "whisper:medium",
+      "reviewer": "gemma4:12b",
+      "wer": {
+        "S0": 0.0482897384305835,
+        "S1": 0.0465444287729196,
+        "total": 0.047438982468202134
+      },
+      "rtf": 0.201,
+      "flagged": 63,
+      "fragments": 106,
+      "improved": 23,
+      "worsened": 6,
+      "neutral": 34,
+      "oracle_all": 0.0426,
+      "oracle_gate": 0.0437,
+      "g2_alone": 0.065
+    },
+    {
+      "g1": "ollama:gemma4:e2b",
+      "g2": "whisper:large-v3",
+      "reviewer": "gemma4:12b",
+      "wer": {
+        "S0": 0.038900067069081154,
+        "S1": 0.0465444287729196,
+        "total": 0.04262633207287728
+      },
+      "rtf": 0.232,
+      "flagged": 55,
+      "fragments": 106,
+      "improved": 9,
+      "worsened": 3,
+      "neutral": 43,
+      "oracle_all": 0.0364,
+      "oracle_gate": 0.0385,
+      "g2_alone": 0.0495
+    },
+    {
+      "g1": "ollama:gemma4:e2b",
+      "g2": "whisper:large-v3-turbo",
+      "reviewer": "gemma4:12b",
+      "wer": {
+        "S0": 0.046948356807511735,
+        "S1": 0.03596614950634697,
+        "total": 0.041595049845307666
+      },
+      "rtf": 0.148,
+      "flagged": 55,
+      "fragments": 106,
+      "improved": 6,
+      "worsened": 3,
+      "neutral": 46,
+      "oracle_all": 0.0347,
+      "oracle_gate": 0.0358,
+      "g2_alone": 0.0485
+    },
+    {
+      "g1": "ollama:gemma4:e4b",
+      "g2": "whisper:medium",
+      "reviewer": "gemma4:12b",
+      "wer": {
+        "S0": 0.038900067069081154,
+        "S1": 0.04442877291960508,
+        "total": 0.041595049845307666
+      },
+      "rtf": 0.195,
+      "flagged": 52,
+      "fragments": 106,
+      "improved": 23,
+      "worsened": 6,
+      "neutral": 23,
+      "oracle_all": 0.0375,
+      "oracle_gate": 0.0406,
+      "g2_alone": 0.065
+    },
+    {
+      "g1": "ollama:gemma4:e4b",
+      "g2": "whisper:large-v3",
+      "reviewer": "gemma4:12b",
+      "wer": {
+        "S0": 0.04158283031522468,
+        "S1": 0.04160789844851904,
+        "total": 0.041595049845307666
+      },
+      "rtf": 0.234,
+      "flagged": 51,
+      "fragments": 106,
+      "improved": 12,
+      "worsened": 10,
+      "neutral": 29,
+      "oracle_all": 0.0309,
+      "oracle_gate": 0.0327,
+      "g2_alone": 0.0495
+    },
+    {
+      "g1": "ollama:gemma4:e4b",
+      "g2": "whisper:large-v3-turbo",
+      "reviewer": "gemma4:12b",
+      "wer": {
+        "S0": 0.04158283031522468,
+        "S1": 0.0380818053596615,
+        "total": 0.039876246132691646
+      },
+      "rtf": 0.149,
+      "flagged": 49,
+      "fragments": 106,
+      "improved": 7,
+      "worsened": 7,
+      "neutral": 35,
+      "oracle_all": 0.0316,
+      "oracle_gate": 0.0344,
+      "g2_alone": 0.0485
+    }
+  ],
+  "compare": {
+    "a": "gemma4:e4b",
+    "b": "nemotron-3.5-bolt:e4b-q4_K_M",
+    "fragments": 106,
+    "identical": 65,
+    "wins_a": 27,
+    "wins_b": 8,
+    "ties": 71,
+    "p_sign": 0.0019,
+    "wer_between": 0.0522
+  }
+}

@@ -17,9 +17,14 @@
 # Como atualizar: consulte https://ollama.com/search?c=audio, edite este arquivo e reinicie o app.
 # Fica ao lado do executável (ou na raiz do projeto); não é preciso recompilar.
 #
-# Última revisão: 2026-11-08
+# Última revisão: 2026-11-11
 #
 # Fora do catálogo de propósito:
+#  - nemotron-3.5-bolt:e4b-q4_K_M (NVIDIA): removido em 2026-11-11. Pós-treino do Gemma 4 E4B, mas MAIS FRACO que o gemma4:e4b em fala real
+#    (WER 10,0 % × 7,9 %; teste dos sinais p = 0,002), ~1,6x mais lento e derrubou o Ollama com chamadas em paralelo; como
+#    revisor perde para o gemma4:12b. Não agrega;
+#  - lfm3-omni:2b-q4_K_M e lfm3-audio:2b-q4_K_M (Liquid AI): removidos em 2026-11-11. Bons em inglês, mas FRACOS em português
+#    (WER de 22 a 69 % em fala real PT-BR contra ~6 % do gemma4:e4b), o que os inviabiliza como geradores ou revisores;
 #  - têm áudio, mas não são para transcrição: embeddinggemma-2 (embeddings), d1-omni (decisão);
 #  - nemotron-3.5-bolt:74b-a9b-iq2 (25 GB, tem projetor): NÃO testado. Só o bolt:e4b foi testado e entrou;
 #  - nemotron3 (33B, Nano Omni): apesar do selo "audio" na biblioteca, as tags GGUF não têm projetor
@@ -33,6 +38,8 @@
 gemma4:e4b            | 6.6 GB  | Padrão recomendado (4B efetivos). Melhor equilíbrio nos testes (inglês e português).
 gemma4:e2b            | 4.6 GB  | 2B efetivos: mais leve e rápido; um pouco pior em português.
 gemma4:12b            | 8.0 GB  | 12B: maior, contexto longo. Nos testes não superou o e4b e às vezes recusa transcrever.
-nemotron-3.5-bolt:e4b-q4_K_M | 7.9 GB | NVIDIA Nemotron 3.5 Bolt (8B, 4B efetivos, Q4_K_M; base Gemma 4 E4B). Testado: empata com o gemma4:e4b.
-lfm3-omni:2b-q4_K_M   | 2.0 GB  | Liquid AI, 2B, Q4_K_M. Bom em inglês, FRACO em português (WER 75% no teste).
-lfm3-audio:2b-q4_K_M  | 1.7 GB  | Liquid AI, 2B, Q4_K_M, o mais leve. Bom em inglês, fraco em português (WER 55%).
+
+# Escondidos das opções mesmo se estiverem instalados (formato: !nome:tag | motivo). Não apagam nada do disco.
+!lfm3-omni:2b-q4_K_M   | fraco em português (WER 22–69 % em fala real)
+!lfm3-audio:2b-q4_K_M  | fraco em português (WER 55 % no teste sintético)
+!nemotron-3.5-bolt:e4b-q4_K_M | pior que o gemma4:e4b (WER 10,0 % × 7,9 %), mais lento e instável; não agrega

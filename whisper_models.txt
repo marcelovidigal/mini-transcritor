@@ -1,0 +1,70 @@
+# Catálogo estático dos modelos dos MOTORES ALTERNATIVOS (família Whisper). O motor padrão (Ollama) usa audio_models.txt.
+#
+# Formato (uma linha por modelo):   motor | modelo | tamanho aproximado do download | observação
+#
+# Motores:
+#   openai-whisper  — pacote `openai-whisper` (PyTorch). Modelos .pt baixados para ~/.cache/whisper.
+#   faster-whisper  — pacote `faster-whisper` (CTranslate2; mais rápido e leve que o original). Modelos do Hugging Face.
+#   whisper-cpp     — executável `whisper-cli` do whisper.cpp (C/C++; sem Python/PyTorch). Um só motor: usa a GPU NVIDIA (CUDA)
+#                     quando houver e, senão, a CPU (os dois executáveis são baixados do release oficial conforme a máquina).
+#                     Modelos GGML `ggml-<nome>.bin` do Hugging Face (ggerganov/whisper.cpp), baixados para a pasta de dados do app.
+#                     Os nomes foram escritos de memória: se um download der 404, ajuste a linha. Sufixos q5_0/q5_1 = quantizado.
+#   nemo-speech-cpp — NeMo-Speech.cpp (NVIDIA, C++/ggml; sem Python/PyTorch; CPU, CUDA e Vulkan). Modelos GGUF com tamanho e
+#                     SHA-256 fixos em transcritor/engines.py (NEMO_MODELS); aqui só a lista da tela. O Transcribe-30B vem da conversão
+#                     da AtomicChat (comunidade; não é da NVIDIA) e é baixado em par (decodificador + codificador de 1,67 GB).
+#   nemotron-vllm   — o Transcribe-30B NVFP4 oficial por um servidor vLLM (GPU Blackwell); o app é só cliente.
+#   whisperx        — pacote `whisperx`: faster-whisper + VAD + alinhamento forçado por palavra (wav2vec2) +
+#                     DIARIZAÇÃO (quem fala; exige token do Hugging Face). Usa os mesmos modelos do faster-whisper.
+#
+# REGRA DE NOMES: sempre o nome completo e específico do modelo (ex.: large-v3), nunca apelidos ambíguos
+# como `large` ou `turbo`. Os modelos só são baixados quando o usuário os seleciona para gerar uma legenda;
+# na tela, "baixado" só aparece para quem já está no disco.
+#
+# A ORDEM é a prioridade (recomendados primeiro). Linhas com # são comentários.
+# Parâmetros: tiny 39M · base 74M · small 244M · medium 769M · large 1,55B · turbo 809M (large-v3 podado, 4 decoders).
+# Todos geram timestamps por trecho de fala; com o whisperx, também por palavra.
+# Fora do catálogo de propósito: gerações anteriores (large-v1, large-v2) e modelos só para inglês (.en e distil-*); os do catálogo são
+# todos multilíngues (PT-BR incluído).
+#
+# Última revisão: 2026-11-10
+
+openai-whisper | large-v3-turbo | ~1.6 GB | Recomendado: qualidade próxima do large-v3 com ~6x a velocidade (809M).
+openai-whisper | large-v3 | ~3.1 GB | Maior qualidade (1,55B); exige ~10 GB de VRAM.
+openai-whisper | medium | ~1.5 GB | Equilíbrio (769M, ~5 GB de VRAM).
+openai-whisper | small | ~0.5 GB | Rápido (244M).
+openai-whisper | base | ~0.15 GB | Muito rápido (74M); qualidade modesta.
+openai-whisper | tiny | ~0.08 GB | Só para testes (39M).
+
+faster-whisper | large-v3-turbo | ~1.6 GB | Recomendado: rápido e preciso (809M).
+faster-whisper | large-v3 | ~3.1 GB | Maior qualidade (1,55B).
+faster-whisper | medium | ~1.5 GB | Equilíbrio (769M).
+faster-whisper | small | ~0.5 GB | Rápido (244M).
+faster-whisper | base | ~0.15 GB | Muito rápido (74M).
+faster-whisper | tiny | ~0.08 GB | Só para testes (39M).
+
+whisperx | large-v3-turbo | ~1.6 GB | Recomendado. Alinhamento por palavra e diarização opcional.
+whisperx | large-v3 | ~3.1 GB | Maior qualidade (1,55B).
+whisperx | medium | ~1.5 GB | Equilíbrio (769M).
+whisperx | small | ~0.5 GB | Rápido (244M).
+whisperx | base | ~0.15 GB | Muito rápido (74M).
+whisperx | tiny | ~0.08 GB | Só para testes (39M).
+
+whisper-cpp | large-v3-turbo-q5_0 | ~0.57 GB | Recomendado para comparar: turbo quantizado (q5_0), leve e rápido.
+whisper-cpp | large-v3-turbo | ~1.6 GB | Turbo sem quantização (809M).
+whisper-cpp | large-v3-q5_0 | ~1.1 GB | large-v3 quantizado.
+whisper-cpp | large-v3 | ~3.1 GB | large-v3 completo (1,55B).
+whisper-cpp | medium-q5_0 | ~0.54 GB | medium quantizado.
+whisper-cpp | medium | ~1.5 GB | medium completo (769M).
+whisper-cpp | small-q5_1 | ~0.19 GB | small quantizado.
+whisper-cpp | small | ~0.47 GB | small completo (244M).
+whisper-cpp | base-q5_1 | ~0.06 GB | base quantizado.
+whisper-cpp | base | ~0.14 GB | base completo (74M).
+whisper-cpp | tiny-q5_1 | ~0.03 GB | tiny quantizado (só para testes).
+whisper-cpp | tiny | ~0.08 GB | tiny completo (39M, só para testes).
+
+
+nemo-speech-cpp | nemotron-3.5-transcribe-30b-a4b-q2_0_m | ~15.2 GB | Transcribe 30B-A4B (Q2_0_M, 13,6 GB + codificador 1,7 GB): cabe em GPU de 16 GB; qualidade medida pela AtomicChat dentro do ruído do BF16 em en/de/fr/es.
+nemo-speech-cpp | nemotron-3.5-transcribe-30b-a4b-q2_0_l | ~17.2 GB | Transcribe 30B-A4B (Q2_0_L, 15,5 GB + codificador 1,7 GB): um pouco maior e mais fiel; GPU de 24 GB.
+nemo-speech-cpp | nemotron-3.5-asr-streaming-0.6b | ~0.74 GB | ASR Streaming 0,6 B multilíngue (Q8_0): leve e rápido; sem instruções/contexto.
+
+nemotron-vllm | nvidia/NVIDIA-Nemotron-3.5-Transcribe-30B-A4B-NVFP4 | servidor | Oficial NVIDIA em NVFP4: só GPU Blackwell, servido pelo vLLM (informe o endereço em Configurações).

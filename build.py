@@ -43,16 +43,25 @@ def main() -> None:
         sys.executable, "-m", "PyInstaller", "--noconfirm", "--clean", "--onedir", "--console",
         "--name", NAME,
         "--exclude-module", "authlib", "--exclude-module", "waitress",  # só o modo servidor usa
+        # motores opcionais (importados sob demanda em transcritor/engines.py): nunca entram no executável,
+        # mesmo que o PyTorch esteja instalado no ambiente de build (o PyInstaller o embutiria: ~2,7 GB)
+        *[arg for mod in ("torch", "torchvision", "torchaudio", "triton", "whisper", "faster_whisper", "whisperx", "ctranslate2", "pyannote",
+                    "transformers", "tokenizers", "huggingface_hub", "tqdm", "scipy", "pandas", "pyarrow", "cv2", "onnxruntime", "plotly",
+                    "grpc", "google")
+          for arg in ("--exclude-module", mod)],
         "--add-data", f"{os.path.join(ROOT, 'templates')}{SEP}templates",
         "--add-data", f"{os.path.join(ROOT, 'static')}{SEP}static",
         "--add-data", f"{os.path.join(ROOT, 'audio_models.txt')}{SEP}.",
+        "--add-data", f"{os.path.join(ROOT, 'whisper_models.txt')}{SEP}.",
+        "--add-data", f"{os.path.join(ROOT, 'prompts')}{SEP}prompts",
         "--distpath", dist, "--workpath", os.path.join(ROOT, "build"), "--specpath", os.path.join(ROOT, "build"),
         os.path.join(ROOT, "launcher.py"),
     ], cwd=ROOT)
 
     out = os.path.join(dist, NAME)
-    shutil.copy(os.path.join(ROOT, "audio_models.txt"), out)  # editável, ao lado do executável
-    for extra in ("README.md", "docs"):
+    for catalog_file in ("audio_models.txt", "whisper_models.txt"):
+        shutil.copy(os.path.join(ROOT, catalog_file), out)  # editáveis, ao lado do executável
+    for extra in ("README.md", "docs", "prompts"):  # prompts/: editáveis, ao lado do executável (transcritor/prompts.py lê de lá)
         src = os.path.join(ROOT, extra)
         dst = os.path.join(out, extra)
         shutil.copytree(src, dst, dirs_exist_ok=True) if os.path.isdir(src) else shutil.copy(src, dst)

@@ -1,0 +1,20 @@
+# Motores de transcrição OPCIONAIS (o app funciona só com o Ollama sem nada disto). Instalados no .venv por tools/setup_venv.py.
+# O PyTorch (torch/torchaudio/torchvision) NÃO está aqui: a build certa depende da GPU (XPU, CUDA, CPU) e é instalada antes
+# pelo setup_venv.py (ver --torch). O WhisperX também é instalado pelo script (sem dependências, para não trocar o seu PyTorch).
+openai-whisper
+faster-whisper
+huggingface_hub
+#
+#   pip install openai-whisper     # OpenAI Whisper (exige PyTorch)
+#   pip install faster-whisper     # faster-whisper (CTranslate2, SEM PyTorch) — mais rápido e leve
+#   pip install whisperx           # WhisperX: VAD + alinhamento + diarização (instala o faster-whisper E o PyTorch)
+#
+# Dispositivo: automático (CUDA > Intel XPU > Metal > CPU) ou fixado em Configurações / MT_DEVICE=cpu|cuda|xpu|mps.
+#   Intel XPU: instale a build +xpu do PyTorch (https://pytorch.org/get-started/locally/, opção XPU).
+#   Apple Silicon: o PyTorch padrão já traz o Metal (MPS). O faster-whisper só usa CPU ou CUDA.
+# GPU NVIDIA: instale o PyTorch com CUDA antes (https://pytorch.org/get-started/locally/) e, para o faster-whisper,
+# as bibliotecas cuBLAS/cuDNN compatíveis. Sem GPU, rodam na CPU (bem mais devagar).
+# Diarização: token do Hugging Face (HF_TOKEN ou Configurações) + aceitar a licença dos modelos pyannote no site do Hugging Face:
+#   WhisperX 3.8 (pyannote-audio 4): pyannote/speaker-diarization-community-1; versões anteriores: pyannote/speaker-diarization-3.1
+#   (o app tenta o 3.1 e depois o padrão do WhisperX; WHISPERX_DIARIZATION_MODEL fixa um modelo). Ver docs/modelos.md.
+# O executável (PyInstaller) NÃO inclui estes pacotes: para usá-los, rode a partir do código-fonte.

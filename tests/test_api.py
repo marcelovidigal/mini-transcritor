@@ -37,7 +37,7 @@ def test_audio_job_generates_valid_srt(client_factory, media_dir, tmp_path):
     s, seen = wait_done(c, r.get_json()["id"])
     assert s["status"] == "done", s
     assert seen == sorted(seen) and s["progress"] == 100
-    assert len(fake.calls) >= 2 and fake.translations == ["pt-BR"] * len(fake.calls)
+    assert len(fake.calls) >= 2 and sum(fake.batches) == len(fake.calls)  # tradução em lote: uma chamada cobre as falas
     out = tmp_path / "entrada.pt-BR.srt"
     assert s["output_path"] == str(out) and out.exists()
     text = out.read_text(encoding="utf-8")

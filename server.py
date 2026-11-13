@@ -6,10 +6,13 @@ import os
 import sys
 
 from app import create_app
+from transcritor import envfile
 from transcritor.webserver import ConfigError, ServerConfig
 
 
 def main() -> int:
+    # lê o .env da pasta do projeto (credenciais Google etc.); o que já estiver no ambiente tem prioridade
+    envfile.load(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env"))
     try:
         cfg = ServerConfig.from_env()
     except ConfigError as e:

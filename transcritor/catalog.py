@@ -35,7 +35,7 @@ def parse(text: str) -> list[dict]:
     out, seen = [], set()
     for line in text.splitlines():
         line = line.strip()
-        if not line or line.startswith("#"):
+        if not line or line.startswith(("#", "!")):  # "!" = modelo escondido (parse_excluded)
             continue
         parts = [p.strip() for p in line.split("|")]
         name = parts[0]
@@ -44,6 +44,29 @@ def parse(text: str) -> list[dict]:
         seen.add(norm(name))
         out.append({"name": name, "size": parts[1] if len(parts) > 1 else "", "note": parts[2] if len(parts) > 2 else ""})
     return out
+
+
+def parse_excluded(text: str) -> set[str]:
+    """Modelos que NÃO devem aparecer nas opções mesmo instalados: linhas `!nome:tag | motivo` do arquivo de catálogo."""
+    out = set()
+    for line in text.splitlines():
+        line = line.strip()
+        if line.startswith("!"):
+            name = line[1:].split("|")[0].strip()
+            if name:
+                out.add(norm(name))
+    return out
+
+
+def load_excluded(path: str | None = None) -> set[str]:
+    for p in ([path] if path else _candidate_paths()):
+        try:
+            with open(p, encoding="utf-8") as f:
+                found = parse_excluded(f.read())
+            return found
+        except OSError:
+            continue
+    return set()
 
 
 def load(path: str | None = None) -> list[dict]:
@@ -58,9 +81,11 @@ def load(path: str | None = None) -> list[dict]:
     return [dict(m) for m in _FALLBACK]
 
 
-def merge(catalog: list[dict], installed: list[dict]) -> list[dict]:
-    """Catálogo (na ordem do arquivo) + instalados fora do catálogo. Marca `installed` e `recommended`."""
-    installed_by_norm = {norm(m["name"]): m for m in installed}
+def merge(catalog: list[dict], installed: list[dict], excluded: set[str] | None = None) -> list[dict]:
+    """Catálogo (na ordem do arquivo) + instalados fora do catálogo. Marca `installed` e `recommended`.
+    Modelos em `excluded` (linhas `!nome` do catálogo) somem das opções mesmo que estejam instalados."""
+    excluded = excluded or set()
+    installed_by_norm = {norm(m["name"]): m for m in installed if norm(m["name"]) not in excluded}
     result, in_catalog = [], set()
     for c in catalog:
         key = norm(c["name"])

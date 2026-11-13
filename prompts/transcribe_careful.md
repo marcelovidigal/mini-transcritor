@@ -1,0 +1,1 @@
+Transcribe the speech in this audio clip in its original language. Listen closely to numbers, names and short words, and neither skip nor invent any word. Output ONLY the spoken text as plain text, with normal punctuation. Do not add comments, labels, timestamps or quotes. If there is no intelligible speech, output nothing.{context}

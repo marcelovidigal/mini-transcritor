@@ -8,3 +8,7 @@ output/
 ffmpeg/
 .env
 server_data/
+work/
+whispercpp/
+nemocpp/
+examples/

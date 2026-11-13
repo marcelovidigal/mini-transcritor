@@ -15,7 +15,7 @@ def test_parse_ignores_comments_and_duplicates():
 def test_shipped_catalog_uses_only_explicit_descriptive_tags():
     raw = open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "audio_models.txt"),
                encoding="utf-8").read()
-    names = [l.split("|")[0].strip() for l in raw.splitlines() if l.strip() and not l.startswith("#")]
+    names = [l.split("|")[0].strip() for l in raw.splitlines() if l.strip() and not l.startswith(("#", "!"))]
     assert names and all(catalog.has_explicit_tag(n) for n in names), names  # nada de latest/sem tag
     assert names == [i["name"] for i in catalog.load()]                      # e o parser não descartou nenhum
 
@@ -78,3 +78,13 @@ def test_installed_model_is_not_pulled(client_factory, media_dir, tmp_path):
     c, fake = client_factory()
     s, _ = wait_done(c, start(c, src).get_json()["id"])
     assert s["status"] == "done" and not getattr(fake, "pulled", [])
+
+
+def test_excluded_models_disappear_from_options_even_when_installed():
+    text = "gemma4:e4b | 6.6 GB | ok\n!lfm3-omni:2b-q4_K_M | fraco em português\n"
+    assert catalog.parse_excluded(text) == {"lfm3-omni:2b-q4_k_m"}
+    assert [m["name"] for m in catalog.parse(text)] == ["gemma4:e4b"]  # a linha com ! não vira modelo
+    installed = [{"name": "lfm3-omni:2b-q4_K_M", "size": 2}, {"name": "gemma4:e4b", "size": 6}]
+    names = [m["name"] for m in catalog.merge(catalog.parse(text), installed, catalog.parse_excluded(text))]
+    assert names == ["gemma4:e4b"]
+    assert "lfm3-omni:2b-q4_K_M" in [m["name"] for m in catalog.merge(catalog.parse(text), installed)]  # sem a lista, aparece

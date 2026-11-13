@@ -24,7 +24,8 @@ class FakeClient:
     def audio_models(self):
         return [{"name": "fake-audio:1b", "size": 1_000_000_000}] + getattr(self, "extra_models", [])
 
-    def transcribe(self, model, wav_bytes):
+    def transcribe(self, model, wav_bytes, context="", feedback=""):
+        self.feedbacks = getattr(self, "feedbacks", []) + [feedback]
         from transcritor.ollama_client import OllamaError
 
         if self.fail:
@@ -38,9 +39,46 @@ class FakeClient:
         progress(10, 10, "success")
         self.extra_models = getattr(self, "extra_models", []) + [{"name": model, "size": 1}]
 
-    def translate(self, model, text, language):
+    def translate(self, model, text, language, context=""):
         self.translations = getattr(self, "translations", []) + [language]
         return text
+
+    def review(self, model, wav_bytes, a, b, context="", c="", notes=False, c_is_previous=False):
+        self.reviews = getattr(self, "reviews", []) + [(model, a, b)]
+        return getattr(self, "review_result", {"verdict": "B", "text": b, "confidence": 0.9})
+
+    def review_v2(self, model, wav_bytes, a, b, diffs, seconds, context="", before="", after="", notes=False, trusted=False):
+        self.v2_reviews = getattr(self, "v2_reviews", []) + [(model, a, b, trusted)]
+        return getattr(self, "review_v2_result", {"analysis": "x", "speech": True, "picks": ["B"] * len(diffs or []), "fixes": [], "confidence": 0.9})
+
+    def transcribe_variant(self, model, wav_bytes, context="", kind="literal"):
+        return getattr(self, "variant_result", {}).get(kind, "")
+
+    def review_self(self, model, wav_bytes, text, seconds, context="", before="", after="", doubts=None, unstable=False):
+        self.self_reviews = getattr(self, "self_reviews", []) + [(text, doubts, unstable)]
+        return getattr(self, "review_self_result", {"analysis": "x", "speech": True, "verdict": "ok", "fixes": [], "critique": "", "terms": [], "confidence": 0.9})
+
+    def transcribe_self(self, model, wav_bytes, context="", previous="", critique="", terms=None):
+        return previous
+
+    def transcribe_reason(self, model, wav_bytes, context="", points=None, critique="", terms=None):
+        return "texto refinado"
+
+    def triage(self, model, items, context="", limit=20):
+        return {"analysis": "x", "glossary": [], "suspects": []}
+
+    def polish(self, model, texts, language="", glossary=""):
+        return list(getattr(self, "polish_result", texts))
+
+    def review_translation(self, model, pairs, language, glossary=""):
+        return list(getattr(self, "review_translation_result", [t for _s, t in pairs]))
+
+    def warm_up(self, model):
+        self.warmed = getattr(self, "warmed", []) + [model]
+
+    def translate_batch(self, model, texts, language, context=""):
+        self.batches = getattr(self, "batches", []) + [len(texts)]
+        return list(texts)
 
 
 def _ffmpeg(*args):

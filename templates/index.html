@@ -14,7 +14,7 @@
     <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="Logo" width="56" height="56">
     <div>
       <h1 class="h3 mb-0">Mini Transcritor</h1>
-      <small class="text-body-secondary">Legendas SRT a partir de áudio ou vídeo, com modelos locais do Ollama</small>
+      <small class="text-body-secondary">Legendas SRT a partir de áudio ou vídeo, com modelos locais (Ollama, Whisper, Nemotron)</small>
     </div>
     {% if server_mode %}
     <div class="ms-auto text-end small">
@@ -58,19 +58,36 @@
       </div>
       {% endif %}
 
-      <div class="row g-3 mb-4">
+      <div class="row g-3 mb-3">
         <div class="col-md-5">
           <label for="language" class="form-label">Idioma da legenda</label>
           <select id="language" class="form-select"></select>
         </div>
         <div class="col-md-7">
-          <label for="model" class="form-label">Modelo Ollama (com áudio)</label>
-          <div class="input-group">
-            <select id="model" class="form-select"></select>
-            <button type="button" id="btnRefresh" class="btn btn-outline-secondary" title="Atualizar modelos">&#8635;</button>
-          </div>
-          <div id="modelHint" class="form-text"></div>
+          <label for="engine" class="form-label">Motor de transcrição</label>
+          <select id="engine" class="form-select"></select>
+          <div id="engineHint" class="form-text"></div>
+          <div id="enginePlan" class="small mt-2 d-none"></div>
         </div>
+      </div>
+      <div class="mb-3">
+        <label for="model" class="form-label" id="modelLabel">Modelo Ollama (com áudio)</label>
+        <div class="input-group">
+          <select id="model" class="form-select"></select>
+          <button type="button" id="btnRefresh" class="btn btn-outline-secondary" title="Atualizar modelos">&#8635;</button>
+        </div>
+        <div id="modelHint" class="form-text"></div>
+      </div>
+      <div class="mb-3">
+        <label for="context" class="form-label">Contexto ou glossário <span class="text-body-secondary">(opcional)</span></label>
+        <textarea id="context" class="form-control" rows="2" maxlength="500"
+                  placeholder="Tema, nomes próprios e termos técnicos. Ex.: Aula de cardiologia; Dra. Helena Duarte; fibrilação atrial"></textarea>
+        <div class="form-text">Ajuda o modelo a acertar nomes e vocabulário (até 500 caracteres).</div>
+      </div>
+      <div class="form-check mb-4 d-none" id="diarizeBox">
+        <input class="form-check-input" type="checkbox" id="diarize">
+        <label class="form-check-label" for="diarize">Identificar quem fala (diarização)</label>
+        <div id="diarizeHint" class="form-text"></div>
       </div>
 
       <div class="d-flex flex-wrap gap-2">
@@ -91,7 +108,7 @@
       <div id="alert" class="alert mt-4 mb-0 d-none" role="alert"></div>
     </form>
   </div>
-  <p class="text-center text-body-secondary small mt-3 mb-0">Processamento 100% local · FFmpeg + Ollama · v{{ version }}</p>
+  <p class="text-center text-body-secondary small mt-3 mb-0">Processamento 100% local · FFmpeg · Ollama · Whisper · NeMo · v{{ version }}</p>
 </main>
 
 {% if not server_mode %}
@@ -137,6 +154,39 @@
         <div class="form-check mb-3">
           <input class="form-check-input" type="checkbox" id="setAuto">
           <label class="form-check-label" for="setAuto">Baixar o modelo base automaticamente</label>
+        </div>
+        <div class="mb-3">
+          <label for="setHf" class="form-label">Token do Hugging Face (diarização)</label>
+          <input type="password" id="setHf" class="form-control" autocomplete="off" placeholder="hf_…">
+          <div class="form-text" id="hfInfo">Usado só pelo WhisperX para identificar quem fala. Aceite também a licença do modelo
+            <code>pyannote/speaker-diarization-community-1</code> (WhisperX 3.8) ou <code>-3.1</code> (versões anteriores) no Hugging Face. Em branco = manter o atual.</div>
+        </div>
+        <div class="mb-3">
+          <label for="setWcpp" class="form-label">whisper.cpp, executável da CPU (pasta ou <code>whisper-cli</code>)</label>
+          <input type="text" id="setWcpp" class="form-control" placeholder="Em branco = automático (pasta whispercpp/cpu/, baixada ao gerar)">
+          <div class="form-text">O whisper.cpp usa a GPU NVIDIA quando houver e, senão, a CPU. Em branco, o app baixa o executável do release oficial ao usar o motor.</div>
+        </div>
+        <div class="mb-3">
+          <label for="setWcppCuda" class="form-label">whisper.cpp, executável da GPU NVIDIA/CUDA (pasta ou <code>whisper-cli</code>)</label>
+          <input type="text" id="setWcppCuda" class="form-control" placeholder="Em branco = automático (pasta whispercpp/cuda/, baixada ao gerar)">
+          <div class="form-text">Usado quando há GPU NVIDIA (só há binário pronto para Windows x64). GPU Intel/AMD não é usada pelo whisper.cpp.</div>
+        </div>
+        <div class="mb-3">
+          <label for="setNemoCpp" class="form-label">NeMo-Speech.cpp (pasta ou executável do <code>nemo-speech</code>)</label>
+          <input type="text" id="setNemoCpp" class="form-control" placeholder="Em branco = automático (pasta nemocpp/, baixada ao gerar)">
+          <div class="form-text">Motor da NVIDIA para os modelos Nemotron. Em branco, o app baixa o release oficial (CUDA, Vulkan ou CPU, conforme a máquina).</div>
+        </div>
+        <div class="mb-3">
+          <label for="setDevice" class="form-label">Dispositivo dos motores Whisper</label>
+          <select id="setDevice" class="form-select">
+            <option value="auto">Automático (melhor disponível)</option>
+            <option value="cuda">GPU NVIDIA ou AMD (CUDA/ROCm)</option>
+            <option value="xpu">GPU Intel (XPU)</option>
+            <option value="mps">Apple Silicon (Metal)</option>
+            <option value="cpu">CPU</option>
+          </select>
+          <div class="form-text">Vale para OpenAI Whisper, faster-whisper, WhisperX e whisper.cpp (CPU ou NVIDIA; o Ollama usa a GPU por conta própria).
+            faster-whisper só usa CPU ou CUDA. Se o dispositivo escolhido não existir, o trabalho avisa o motivo.</div>
         </div>
         <div class="mb-1">
           <label for="setChunk" class="form-label">Duração dos trechos (segundos)</label>

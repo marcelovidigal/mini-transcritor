@@ -1,0 +1,1 @@
+ Transcription B is the reference and is usually the more reliable one. Transcription A is a second opinion that is sometimes wrong and sometimes writes words for sounds that are not speech (music, effects, breathing).

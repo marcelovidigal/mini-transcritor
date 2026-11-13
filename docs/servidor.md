@@ -48,6 +48,12 @@ Fluxo OAuth 2.0 / OpenID Connect (biblioteca Authlib). Após o login, o servidor
 3. **URIs de redirecionamento autorizados:** `https://seu-dominio/auth/callback` (igual a `BASE_URL` + `/auth/callback`; para teste local use `http://localhost:8000/auth/callback`).
 4. Copie *ID do cliente* e *Chave secreta* para `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`.
 
+## 4.1 Onde ficam as credenciais: o arquivo `.env`
+
+O `server.py` lê automaticamente o arquivo **`.env`** da pasta do projeto (o Docker Compose também o usa). Variáveis já definidas no ambiente têm prioridade sobre o arquivo. O `.env` **está no `.gitignore`** e **nunca deve ser commitado nem colado em chats/documentos**: ele contém a chave secreta do Google. O modelo sem segredos é o `.env.example` (este sim é versionado). Para um teste local: preencha `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `ALLOWED_EMAILS`, deixe `BASE_URL=http://localhost:8000` (igual à URI cadastrada no Google) e rode `python server.py`; abra `http://localhost:8000` (não `127.0.0.1`).
+
+Se uma chave secreta for exposta, gere outra em *Credenciais → (seu ID de cliente) → Adicionar secret* no Google Cloud Console, atualize o `.env` e desative a antiga.
+
 ## 5. Configuração (variáveis de ambiente)
 
 | Variável | Obrigatória | Descrição |

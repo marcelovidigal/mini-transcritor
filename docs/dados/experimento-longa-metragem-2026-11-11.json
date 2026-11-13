@@ -1,0 +1,434 @@
+{
+ "experimento": "longa-metragem (30 min, trecho central, inglês) -> legenda pt-BR",
+ "data": "2026-11-11",
+ "analise": {
+  "e4b": {
+   "src": {
+    "wer": 0.38581024349286314,
+    "precision": 0.7049736247174077,
+    "recall": 0.7854743912678421,
+    "f1": 0.7430500397140587,
+    "hyp_words": 2654,
+    "ref_words": 2382
+   },
+   "timing": {
+    "matched": 0.072,
+    "median_s": 3.03,
+    "p90_s": 9.19,
+    "within_1s": 0.02,
+    "usable_cues": 349
+   },
+   "pt": {
+    "e4b": {
+     "wer": 0.48649807115302185,
+     "precision": 0.6285936285936286,
+     "recall": 0.6935276468066867,
+     "f1": 0.6594660688811902,
+     "hyp_words": 2574,
+     "ref_words": 2333,
+     "chrf": 0.7941
+    },
+    "12b": {
+     "wer": 0.5218841183826595,
+     "precision": 0.6060606060606061,
+     "recall": 0.6502709462275948,
+     "f1": 0.6273878946310075,
+     "hyp_words": 2574,
+     "ref_words": 2399,
+     "chrf": 0.7713
+    }
+   },
+   "coverage": {
+    "recall": 0.8766,
+    "precision": 0.5052,
+    "iou": 0.4716
+   },
+   "rules": {
+    "cues": 282,
+    "over_cps": 21,
+    "line_too_long": 0,
+    "too_many_lines": 0,
+    "too_short": 2,
+    "too_long": 0,
+    "overlap": 0,
+    "gap_too_small": 0
+   },
+   "cues": 282,
+   "words_out_pt": 2577,
+   "wall_s": 333.4,
+   "rtf": 0.184,
+   "stages_s": {
+    "modelo": 0.47,
+    "extracao": 1.66,
+    "vad": 0.22,
+    "transcricao": 285.05,
+    "traducao": 45.96,
+    "montagem": 0.0,
+    "total": 333.36
+   },
+   "warnings": [
+    "1 trecho(s) descartado(s): texto longo demais para a duração do áudio (provável alucinação).",
+    "1 repetição(ões) em laço removida(s).",
+    "1 repetição(ões) na emenda entre trechos removida(s).",
+    "21 legenda(s) passam de 17 caracteres por segundo (leitura rápida): o trecho tem pouco tempo para o texto."
+   ],
+   "speakers": [],
+   "turns": 0,
+   "report": {}
+  },
+  "turbo": {
+   "src": {
+    "wer": 0.1889168765743073,
+    "precision": 0.8482520169035728,
+    "recall": 0.9269521410579346,
+    "f1": 0.8858575727181545,
+    "hyp_words": 2603,
+    "ref_words": 2382
+   },
+   "timing": {
+    "matched": 0.9,
+    "median_s": 0.36,
+    "p90_s": 2.37,
+    "within_1s": 0.67,
+    "usable_cues": 349
+   },
+   "pt": {
+    "e4b": {
+     "wer": 0.24089155593656236,
+     "precision": 0.8078936770036247,
+     "recall": 0.8598371195885126,
+     "f1": 0.8330564784053156,
+     "hyp_words": 2483,
+     "ref_words": 2333,
+     "chrf": 0.8862
+    },
+    "12b": {
+     "wer": 0.31513130471029593,
+     "precision": 0.7551349174385824,
+     "recall": 0.7815756565235514,
+     "f1": 0.7681278164686605,
+     "hyp_words": 2483,
+     "ref_words": 2399,
+     "chrf": 0.8396
+    }
+   },
+   "coverage": {
+    "recall": 0.8752,
+    "precision": 0.6048,
+    "iou": 0.5567
+   },
+   "rules": {
+    "cues": 502,
+    "over_cps": 127,
+    "line_too_long": 0,
+    "too_many_lines": 0,
+    "too_short": 44,
+    "too_long": 0,
+    "overlap": 2,
+    "gap_too_small": 0
+   },
+   "cues": 502,
+   "words_out_pt": 2485,
+   "wall_s": 126.7,
+   "rtf": 0.07,
+   "stages_s": {
+    "modelo": 1.45,
+    "extracao": 1.66,
+    "vad": 0.17,
+    "transcricao": 66.78,
+    "traducao": 56.6,
+    "montagem": 0.0,
+    "total": 126.66
+   },
+   "warnings": [
+    "18 trecho(s) descartado(s): texto longo demais para a duração do áudio (provável alucinação).",
+    "1 repetição(ões) em laço removida(s).",
+    "14 repetição(ões) na emenda entre trechos removida(s).",
+    "127 legenda(s) passam de 17 caracteres por segundo (leitura rápida): o trecho tem pouco tempo para o texto."
+   ],
+   "speakers": [],
+   "turns": 0,
+   "report": {}
+  },
+  "whisperx_diar": {
+   "src": {
+    "wer": 0.08606213266162889,
+    "precision": 0.9494600431965443,
+    "recall": 0.9227539882451721,
+    "f1": 0.9359165424739195,
+    "hyp_words": 2315,
+    "ref_words": 2382
+   },
+   "timing": {
+    "matched": 0.857,
+    "median_s": 0.12,
+    "p90_s": 1.32,
+    "within_1s": 0.739,
+    "usable_cues": 349
+   },
+   "pt": {
+    "e4b": {
+     "wer": 0.23489069867123874,
+     "precision": 0.8160548608309802,
+     "recall": 0.8671238748392628,
+     "f1": 0.8408146300914382,
+     "hyp_words": 2479,
+     "ref_words": 2333,
+     "chrf": 0.8645
+    },
+    "12b": {
+     "wer": 0.31638182576073365,
+     "precision": 0.7620008067769262,
+     "recall": 0.787411421425594,
+     "f1": 0.7744977449774497,
+     "hyp_words": 2479,
+     "ref_words": 2399,
+     "chrf": 0.8157
+    }
+   },
+   "coverage": {
+    "recall": 0.8255,
+    "precision": 0.8444,
+    "iou": 0.7165
+   },
+   "rules": {
+    "cues": 399,
+    "over_cps": 210,
+    "line_too_long": 0,
+    "too_many_lines": 0,
+    "too_short": 56,
+    "too_long": 0,
+    "overlap": 0,
+    "gap_too_small": 1
+   },
+   "cues": 399,
+   "words_out_pt": 2486,
+   "wall_s": 432.4,
+   "rtf": 0.239,
+   "stages_s": {
+    "modelo": 0.31,
+    "extracao": 1.65,
+    "vad": 0.22,
+    "transcricao": 381.41,
+    "traducao": 48.85,
+    "montagem": 0.0,
+    "total": 432.44
+   },
+   "warnings": [
+    "O reconhecimento do WhisperX não usa GPU Intel (XPU): rodando na CPU. Alinhamento e diarização usarão GPU Intel (XPU).",
+    "Diarização com o modelo pyannote/speaker-diarization-3.1.",
+    "1 repetição(ões) em laço removida(s).",
+    "2 repetição(ões) na emenda entre trechos removida(s).",
+    "210 legenda(s) passam de 17 caracteres por segundo (leitura rápida): o trecho tem pouco tempo para o texto."
+   ],
+   "speakers": [
+    "1",
+    "10",
+    "11",
+    "12",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9"
+   ],
+   "turns": 107,
+   "report": {}
+  },
+  "qualidade": {
+   "src": {
+    "wer": 0.18387909319899245,
+    "precision": 0.8558523173605656,
+    "recall": 0.9147774979009236,
+    "f1": 0.8843344155844156,
+    "hyp_words": 2546,
+    "ref_words": 2382
+   },
+   "timing": {
+    "matched": 0.095,
+    "median_s": 3.6,
+    "p90_s": 9.19,
+    "within_1s": 0.023,
+    "usable_cues": 349
+   },
+   "pt": {
+    "e4b": {
+     "wer": 0.25675096442348905,
+     "precision": 0.7997542997542998,
+     "recall": 0.8371195885126447,
+     "f1": 0.8180104712041886,
+     "hyp_words": 2442,
+     "ref_words": 2333,
+     "chrf": 0.8774
+    },
+    "12b": {
+     "wer": 0.32305127136306794,
+     "precision": 0.7555282555282555,
+     "recall": 0.7690704460191746,
+     "f1": 0.7622392067754596,
+     "hyp_words": 2442,
+     "ref_words": 2399,
+     "chrf": 0.8396
+    }
+   },
+   "coverage": {
+    "recall": 0.9007,
+    "precision": 0.5099,
+    "iou": 0.4828
+   },
+   "rules": {
+    "cues": 293,
+    "over_cps": 6,
+    "line_too_long": 0,
+    "too_many_lines": 0,
+    "too_short": 5,
+    "too_long": 0,
+    "overlap": 0,
+    "gap_too_small": 0
+   },
+   "cues": 293,
+   "words_out_pt": 2444,
+   "wall_s": 592.8,
+   "rtf": 0.328,
+   "stages_s": {
+    "modelo": 0.53,
+    "extracao": 1.69,
+    "vad": 0.21,
+    "transcricao": 551.3,
+    "traducao": 39.05,
+    "montagem": 0.0,
+    "total": 592.78
+   },
+   "warnings": [
+    "Revisão do fragmento 7 falhou (Ollama respondeu 400: request (32854 tokens) exceeds the available context size (32768 tokens), try increasing it); mantida a geração prioritária.",
+    "1 repetição(ões) em laço removida(s).",
+    "2 repetição(ões) na emenda entre trechos removida(s).",
+    "6 legenda(s) passam de 17 caracteres por segundo (leitura rápida): o trecho tem pouco tempo para o texto."
+   ],
+   "speakers": [],
+   "turns": 0,
+   "report": {
+    "fragments": 133,
+    "flagged": 118,
+    "reviewed": 118,
+    "from_a": 20,
+    "from_b": 46,
+    "from_c": 0,
+    "merged": 48,
+    "kept_a": 4,
+    "b_source": "OpenAI Whisper large-v3-turbo",
+    "reviewer": "gemma4:12b",
+    "sources": [
+     "Ollama gemma4:e4b",
+     "OpenAI Whisper large-v3-turbo"
+    ],
+    "seconds": {
+     "geracao_a": 292.1,
+     "geracao_b": 69.1,
+     "revisao": 189.5
+    }
+   }
+  },
+  "_agreement_src_wer": {
+   "e4b~turbo": 0.3549,
+   "e4b~whisperx_diar": 0.3433,
+   "e4b~qualidade": 0.2547,
+   "turbo~whisperx_diar": 0.1579,
+   "qualidade~turbo": 0.1335,
+   "qualidade~whisperx_diar": 0.1626
+  },
+  "_reference": {
+   "cues": 422,
+   "words": 2382,
+   "offset_s": 7.21
+  }
+ },
+ "juiz_estrito_0.4s": {
+  "model": "gemma4:12b",
+  "sample": 160,
+  "systems": {
+   "e4b": {
+    "n": 160,
+    "mean": 0.6312,
+    "faithful_2": 0.5312,
+    "partial_1": 0.2,
+    "wrong_0": 0.2687,
+    "empty": 2,
+    "seconds": 38
+   },
+   "turbo": {
+    "n": 160,
+    "mean": 0.9094,
+    "faithful_2": 0.8375,
+    "partial_1": 0.1437,
+    "wrong_0": 0.0187,
+    "empty": 1,
+    "seconds": 25
+   },
+   "whisperx_diar": {
+    "n": 160,
+    "mean": 0.9125,
+    "faithful_2": 0.8625,
+    "partial_1": 0.1,
+    "wrong_0": 0.0375,
+    "empty": 3,
+    "seconds": 26
+   },
+   "qualidade": {
+    "n": 160,
+    "mean": 0.8187,
+    "faithful_2": 0.725,
+    "partial_1": 0.1875,
+    "wrong_0": 0.0875,
+    "empty": 3,
+    "seconds": 26
+   }
+  }
+ },
+ "juiz_tolerante_4s": {
+  "model": "gemma4:12b",
+  "sample": 160,
+  "systems": {
+   "e4b": {
+    "n": 160,
+    "mean": 0.7781,
+    "faithful_2": 0.675,
+    "partial_1": 0.2062,
+    "wrong_0": 0.1187,
+    "empty": 0,
+    "seconds": 28
+   },
+   "turbo": {
+    "n": 160,
+    "mean": 0.9594,
+    "faithful_2": 0.9313,
+    "partial_1": 0.0563,
+    "wrong_0": 0.0125,
+    "empty": 0,
+    "seconds": 27
+   },
+   "whisperx_diar": {
+    "n": 160,
+    "mean": 0.9656,
+    "faithful_2": 0.95,
+    "partial_1": 0.0312,
+    "wrong_0": 0.0187,
+    "empty": 2,
+    "seconds": 28
+   },
+   "qualidade": {
+    "n": 160,
+    "mean": 0.9437,
+    "faithful_2": 0.9062,
+    "partial_1": 0.075,
+    "wrong_0": 0.0187,
+    "empty": 0,
+    "seconds": 28
+   }
+  }
+ },
+ "observacao": "Somente métricas; nenhum trecho de diálogo. Referência = legenda embutida em inglês recortada à janela do trecho."
+}

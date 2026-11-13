@@ -33,6 +33,15 @@ def _defaults() -> dict:
         "auto_pull": True,
         "ffmpeg_path": "",
         "chunk_seconds": chunk,
+        "hf_token": "",
+        "whispercpp_path": "",
+        "whispercpp_cuda_path": "",
+        "nemocpp_path": "",
+        "nemotron_vllm_url": "",
+        "last_dir": "",  # última pasta aberta no navegador de arquivos (ponto de partida da próxima vez)
+        "device": "auto",
+        "parallel": 2,
+        "translate_batch": 8,
     }
 
 
@@ -90,6 +99,47 @@ class Settings:
             if not 5 <= sec <= 28:
                 raise SettingsError("A duração dos trechos deve estar entre 5 e 28 segundos.")
             clean["chunk_seconds"] = sec
+        for key in ("whispercpp_path", "whispercpp_cuda_path"):
+            if key in new:
+                from .engines import WhisperCppEngine
+
+                wp = str(new[key] or "").strip().strip('"')
+                if wp and not WhisperCppEngine.locate(wp):
+                    raise SettingsError("Nesse caminho não foi encontrado o whisper-cli (whisper.cpp). Informe a pasta que o contém (ou o próprio executável).")
+                clean[key] = wp
+        if "nemocpp_path" in new:
+            from . import nemocpp_manager
+
+            np_ = str(new["nemocpp_path"] or "").strip().strip('"')
+            if np_ and not nemocpp_manager.locate(np_):
+                raise SettingsError("Nesse caminho não foi encontrado o nemo-speech (NeMo-Speech.cpp). Informe a pasta que o contém (ou o próprio executável).")
+            clean["nemocpp_path"] = np_
+        if "nemotron_vllm_url" in new:
+            url = str(new["nemotron_vllm_url"] or "").strip().rstrip("/")
+            if url and not url.lower().startswith(("http://", "https://")):
+                raise SettingsError("O endereço do servidor vLLM deve começar com http:// ou https:// (ex.: http://127.0.0.1:8000/v1).")
+            clean["nemotron_vllm_url"] = url
+        if "last_dir" in new:
+            clean["last_dir"] = str(new["last_dir"] or "").strip()[:1024]
+        if "device" in new:
+            dev = str(new["device"] or "auto").strip().lower()
+            if dev not in ("auto", "cpu", "cuda", "xpu", "mps"):
+                raise SettingsError("Dispositivo inválido. Use auto, cpu, cuda, xpu ou mps.")
+            clean["device"] = dev
+        if "hf_token" in new:
+            tok = str(new["hf_token"] or "").strip()
+            if " " in tok:
+                raise SettingsError("Token do Hugging Face inválido.")
+            clean["hf_token"] = tok
+        for key, lo, hi, label in (("parallel", 1, 4, "Chamadas simultâneas"), ("translate_batch", 1, 16, "Falas por lote de tradução")):
+            if key in new:
+                try:
+                    val = int(new[key])
+                except (TypeError, ValueError):
+                    raise SettingsError(f"{label}: valor inválido.")
+                if not lo <= val <= hi:
+                    raise SettingsError(f"{label} deve estar entre {lo} e {hi}.")
+                clean[key] = val
         with self._lock:
             self._data.update(clean)
             data = dict(self._data)

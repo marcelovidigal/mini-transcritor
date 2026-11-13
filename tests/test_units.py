@@ -54,6 +54,46 @@ def test_split_chunks_cuts_in_silence_and_drops_silent():
     assert audio.split_chunks(np.zeros(sr * 10, dtype=np.int16)) == []
 
 
+def _speech(sr, parts):
+    """parts: lista de (duração_s, falando). Ruído alto = 'fala'; zeros = pausa."""
+    rng = np.random.default_rng(1)
+    return np.concatenate(
+        [(rng.standard_normal(int(d * sr)) * 3000).astype(np.int16) if on else np.zeros(int(d * sr), np.int16) for d, on in parts]
+    )
+
+
+def test_detect_speech_skips_silence_and_closes_short_pauses():
+    sr = audio.SAMPLE_RATE
+    sig = _speech(sr, [(5, False), (2, True), (0.2, False), (2, True), (3, False), (1.5, True), (4, False)])
+    spans = audio.detect_speech(sig)
+    assert len(spans) == 2  # a pausa de 0,2 s é fechada; a de 3 s separa
+    assert 4.6 <= spans[0][0] / sr <= 4.8 and 9.4 <= spans[0][1] / sr <= 9.6
+    assert spans[1][0] / sr >= 11.8 and spans[1][1] / sr <= 14.1
+    assert audio.detect_speech(np.zeros(sr * 5, dtype=np.int16)) == []
+    assert audio.detect_speech(np.zeros(10, dtype=np.int16)) == []
+
+
+def test_split_by_speech_groups_to_target_and_cuts_at_pauses():
+    sr = audio.SAMPLE_RATE
+    parts = [(3, False)]
+    for _ in range(8):  # 8 falas de 3 s separadas por pausas de 1 s
+        parts += [(3, True), (1, False)]
+    chunks = audio.split_by_speech(_speech(sr, parts), target=8, maximum=12)
+    assert chunks[0].start >= 2.6  # silêncio inicial pulado (menos a folga de 0,3 s)
+    assert all(c.end - c.start <= 12.01 for c in chunks)
+    assert len(chunks) == 3  # 3+1+3+1+3 = ~11 s -> corta na pausa após atingir o alvo (8 s)
+    for a, b in zip(chunks, chunks[1:]):  # os cortes caem nas pausas (1 s), nunca dentro de uma fala
+        assert b.start - a.end >= 0.3  # pausa de 1 s menos 0,3 s de folga de cada lado
+    assert audio.split_by_speech(np.zeros(sr * 10, dtype=np.int16)) == []
+
+
+def test_split_by_speech_splits_long_continuous_speech():
+    sr = audio.SAMPLE_RATE
+    chunks = audio.split_by_speech(_speech(sr, [(70, True)]), target=20, maximum=28)
+    assert len(chunks) >= 3 and all(c.end - c.start <= 28.01 for c in chunks)
+    assert chunks[0].start < 0.2 and chunks[-1].end > 69.8
+
+
 def test_probe_classifies(media_dir):
     assert media.probe(str(media_dir / "a.mp3")).kind == "audio"
     assert media.probe(str(media_dir / "a.flac")).kind == "audio"

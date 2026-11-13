@@ -13,7 +13,7 @@ from dataclasses import dataclass, field
 
 from flask import Response, jsonify, redirect, render_template_string, request, send_file, session, url_for
 
-from . import media
+from . import engines, media
 from .ollama_client import LANGUAGES, OllamaError
 
 SAFE_METHODS = {"GET", "HEAD", "OPTIONS"}
@@ -252,6 +252,11 @@ def register(app, cfg: ServerConfig, manager, client, config, setup, *, version:
     def create_job():
         language = request.form.get("language", "")
         model = request.form.get("model", "")
+        engine_id = request.form.get("engine") or engines.OLLAMA
+        diarize = request.form.get("diarize") in ("1", "true", "on")
+        context = (request.form.get("context") or "").strip()
+        if len(context) > 500:
+            return err("O contexto/glossário pode ter no máximo 500 caracteres.")
         f = request.files.get("file")
         if setup.snapshot()["status"] != "ready":
             return err("O servidor ainda está se preparando. Aguarde alguns instantes.", 503)
@@ -261,12 +266,19 @@ def register(app, cfg: ServerConfig, manager, client, config, setup, *, version:
             return err("Formato não suportado. Envie um arquivo de áudio ou vídeo (mp4, mkv, mp3, wav, flac…).")
         if language not in LANGUAGES:
             return err("Selecione um idioma de saída válido.")
-        try:
-            installed = {m["name"] for m in client.audio_models()}
-        except OllamaError as e:
-            return err(str(e), 503)
-        if model not in installed:  # no servidor só os modelos já instalados (sem downloads por usuários)
-            return err("O modelo selecionado não está disponível neste servidor.")
+        if engine_id != engines.OLLAMA:  # motor alternativo: só modelos já baixados no servidor
+            msg = engines.check_request(engine_id, model, diarize, config.hf_token, installed_only=True)
+            if msg:
+                return err(msg)
+        else:
+            if diarize:
+                return err("O Ollama não faz diarização. Use o WhisperX.")
+            try:
+                installed = {m["name"] for m in client.audio_models()}
+            except OllamaError as e:
+                return err(str(e), 503)
+            if model not in installed:  # no servidor só os modelos já instalados (sem downloads por usuários)
+                return err("O modelo selecionado não está disponível neste servidor.")
         with create_lock:  # uma legenda por usuário: processando, na fila ou aguardando download
             if manager.jobs_of(me()):
                 return err("Você já tem um arquivo em andamento ou uma legenda pronta. Baixe-a ou clique em Limpar "
@@ -280,7 +292,7 @@ def register(app, cfg: ServerConfig, manager, client, config, setup, *, version:
                 _rm(path)
                 return err("Falha ao gravar o arquivo enviado.", 500)
             job = manager.create(path, language, model, owner=me(), source_name=f.filename,
-                                 output_dir=cfg.download_dir, job_id=job_id)
+                                 output_dir=cfg.download_dir, job_id=job_id, engine=engine_id, diarize=diarize, context=context)
         return jsonify({"ok": True, "id": job.id}), 202
 
     @app.get("/api/jobs/current")
