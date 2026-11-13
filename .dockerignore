@@ -12,3 +12,18 @@ output
 tests
 docs
 *.log
+# Nunca entram na imagem, mesmo num build local (o CI só enxerga arquivos versionados, mas aqui há material local):
+examples
+work
+whispercpp
+nemocpp
+.vscode
+.claude
+settings.json
+*.srt
+*.wav
+*.mp3
+*.mp4
+*.mkv
+*.gguf
+*.bin
